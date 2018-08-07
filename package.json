@@ -1,0 +1,36 @@
+{
+  "name": "@blockid/contracts",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Block ID Solidity Contracts",
+  "author": {
+    "name": "Stanislaw Glogowski",
+    "email": "hello@newobject.pl"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blockid/contracts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/blockid/contracts/issues"
+  },
+  "scripts": {
+    "compile:test": "truffle compile --reset --network=test",
+    "migrate:test": "truffle migrate --reset --network=test",
+    "migrate:prod": "truffle migrate --network=prod",
+    "test": "truffle test --reset --network=test",
+    "test:node": "ganache-cli -m \"$TEST_MNEMONIC\" -i 100 -g 100000000000"
+  },
+  "dependencies": {
+    "bignumber.js": "^7.2.1",
+    "bip39": "^2.5.0",
+    "blockid": "0.1.0-alpha.1",
+    "eth-ens-namehash": "^2.0.8",
+    "ethereumjs-wallet": "0.6.0",
+    "ganache-cli": "^6.1.4",
+    "secp256k1": "^3.5.0",
+    "truffle": "^4.1.13",
+    "truffle-hdwallet-provider": "0.0.5",
+    "web3": "^0.20.6"
+  }
+}
