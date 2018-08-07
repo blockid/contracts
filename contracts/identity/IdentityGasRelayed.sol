@@ -17,9 +17,11 @@ contract IdentityGasRelayed is AbstractIdentityGasRelayed, IdentityClaimHolder, 
 
     _;
 
-    uint256 amount = (startGas - gasleft() + _extraGas) * tx.gasprice;
+    if (_extraGas > 0) {
+      uint256 amount = (startGas - gasleft() + _extraGas) * tx.gasprice;
 
-    require(msg.sender.call.gas(0).value(amount)());
+      require(msg.sender.call.gas(0).value(amount)());
+    }
   }
 
   constructor() internal {
