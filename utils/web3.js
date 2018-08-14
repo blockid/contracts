@@ -1,5 +1,7 @@
 const Web3 = require('web3');
 
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 if (!global.web3) {
   global.web3 = new Web3(new Web3.providers.HttpProvider(process.env.TEST_ENDPOINT));
 }
@@ -34,6 +36,7 @@ function ethToWei(value) {
 }
 
 module.exports = {
+  ZERO_ADDRESS,
   sha3,
   getBalance,
   getGasPrice,
