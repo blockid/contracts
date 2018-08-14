@@ -95,6 +95,8 @@ contract IdentityRegistry is AbstractIdentityRegistry, Ownable {
     bytes32 ensNode = keccak256(abi.encodePacked(_ensRootNode, ENS_REGISTRY_LABEL));
     ensResolver.setAddr(ensNode, address(0));
 
+    ens.setOwner(_ensRootNode, msg.sender);
+
     delete supportedEnsRootNodes[_ensRootNode];
 
     emit ENSRootNodeRemoved(_ensRootNode);
