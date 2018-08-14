@@ -12,10 +12,10 @@ contract ENSRegistrarMock is AbstractENSFIFSRegistrar {
   bytes32 public rootNode;
 
   modifier onlyOwner(bytes32 _label) {
-    address currentOwner = keccak256(abi.encodePacked(rootNode, _label));
+    address currentOwner = ens.owner(keccak256(abi.encodePacked(rootNode, _label)));
 
     require(
-      currentOwner == 0 || currentOwner == msg.sender,
+      currentOwner == address(0) || currentOwner == msg.sender,
       "Revert by onlyOwner modifier"
     );
     _;
