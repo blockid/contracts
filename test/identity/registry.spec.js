@@ -68,7 +68,7 @@ contract('IdentityRegistry', (accounts) => {
   describe('methods', () => {
     describe('#createIdentity()', () => {
 
-      it('should create identity with ids1.blockid.eth ens name and accounts[1] management key', async () => {
+      it('should create identity with ids1.blockid.test ens name and accounts[1] management key', async () => {
         const ensName = `idrm.${ensRoot.name}`;
         const ensNameHash = getNameHash(ensName);
         const ensLabelHash = getLabelHash(ensName);

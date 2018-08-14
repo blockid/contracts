@@ -15,9 +15,9 @@ contract('ENS', (accounts) => {
     ensResolver = await ENSResolver.deployed();
   });
 
-  it('should register name account1.eth for accounts[1]', async () => {
+  it('should register name account1.test for accounts[1]', async () => {
 
-    const name = 'account1.eth';
+    const name = 'account1.test';
     const nameHash = getNameHash(name);
     const labelHash = getLabelHash(name);
 
