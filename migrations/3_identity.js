@@ -10,32 +10,45 @@ const ENSResolver = artifacts.require('ENSResolver.sol');
 const Identity = artifacts.require('Identity.sol');
 const IdentityRegistry = artifacts.require('IdentityRegistry.sol');
 
-module.exports = function(deployer) {
-  const ensNameHash = getNameHash("blockid.eth");
+module.exports = function(deployer, network) {
+  deployer.then(async () => {
+    let ens;
+    let ensDomainHash;
 
-  const ens = process.env.PROD_ENS
-    ? AbstractENS.at(process.env.PROD_ENS)
-    : AbstractENS.at(ENSMock.address);
+    switch (network) {
+      case 'prod':
+        ens = AbstractENS.at(process.env.PROD_ENS_ADDRESS);
+        ensDomainHash = getNameHash(process.env.PROD_ENS_DOMAIN);
+        break;
 
-  deployer.deploy(AddressLib);
-  deployer.deploy(AddressArrayLib);
-  deployer.deploy(SignatureLib);
+      case 'test':
+        ens = AbstractENS.at(ENSMock.address);
+        ensDomainHash = getNameHash('blockid.test');
+        break;
+    }
 
-  deployer.link(AddressLib, IdentityRegistry);
-  deployer.link(AddressArrayLib, IdentityRegistry);
-  deployer.link(SignatureLib, IdentityRegistry);
+    await deployer.deploy(AddressLib);
+    await deployer.deploy(AddressArrayLib);
+    await deployer.deploy(SignatureLib);
 
-  deployer.link(AddressLib, Identity);
-  deployer.link(AddressArrayLib, Identity);
-  deployer.link(SignatureLib, Identity);
+    deployer.link(AddressLib, IdentityRegistry);
+    deployer.link(AddressArrayLib, IdentityRegistry);
+    deployer.link(SignatureLib, IdentityRegistry);
 
-  deployer
-    .deploy(Identity)
-    .then(async (identity) => {
-      const registry = await deployer.deploy(IdentityRegistry, ens.address, ENSResolver.address, identity.address);
+    deployer.link(AddressLib, Identity);
+    deployer.link(AddressArrayLib, Identity);
+    deployer.link(SignatureLib, Identity);
 
-      await identity.addFirstMember(identity.address);
-      await ens.setOwner(ensNameHash, registry.address);
-      await registry.addEnsRootNode(ensNameHash);
-    });
+    const identity = await deployer.deploy(Identity);
+    const identityRegistry = await deployer.deploy(
+      IdentityRegistry,
+      ens.address,
+      ENSResolver.address,
+      identity.address
+    );
+
+    await identity.addFirstMember(identity.address);
+    await ens.setOwner(ensDomainHash, identityRegistry.address);
+    await identityRegistry.addEnsRootNode(ensDomainHash);
+  });
 };
