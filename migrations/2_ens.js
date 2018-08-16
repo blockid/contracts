@@ -17,8 +17,6 @@ module.exports = function(deployer, network, [account]) {
         ens = AbstractENS.at(process.env.PROD_ENS_ADDRESS);
         const owner = await ens.owner(getNameHash(process.env.PROD_ENS_DOMAIN));
 
-        console.log(owner);
-
         switch (owner) {
           case account:
             break;
