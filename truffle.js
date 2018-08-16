@@ -15,7 +15,7 @@ module.exports = {
         );
       },
       network_id: 4,
-      gas: 7500000,
+      gas: 6000000,
     },
     solc: {
       optimizer: {

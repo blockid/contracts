@@ -17,13 +17,15 @@ module.exports = function(deployer, network, [account]) {
         ens = AbstractENS.at(process.env.PROD_ENS_ADDRESS);
         const owner = await ens.owner(getNameHash(process.env.PROD_ENS_DOMAIN));
 
+        console.log(owner);
+
         switch (owner) {
           case account:
             break;
 
           case ZERO_ADDRESS:
             if (process.env.PROD_ENS_TLD === 'test') {
-              const registrarAddress = await ens.owner(getNameHash(process.env.PROD_ENS_TLD));
+              const registrarAddress = await ens.owner(getNameHash('test'));
               const registrar = AbstractENSFIFSRegistrar.at(registrarAddress);
               await registrar.register(getLabelHash(process.env.PROD_ENS_DOMAIN), account)
             } else {
