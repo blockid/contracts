@@ -5,7 +5,7 @@ module.exports = {
   networks: {
     test: {
       provider: new Web3.providers.HttpProvider(process.env.TEST_ENDPOINT),
-      network_id: 100,
+      network_id: "1000",
     },
     prod: {
       provider: function() {
