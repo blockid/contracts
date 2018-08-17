@@ -1,4 +1,4 @@
-const { getNameHash } = require('../utils/ens');
+const { getNameHash, getLabelHash } = require('../utils/ens');
 
 const AddressLib = artifacts.require('AddressLib.sol');
 const AddressArrayLib = artifacts.require('AddressArrayLib.sol');
@@ -50,5 +50,8 @@ module.exports = function(deployer, network) {
     await identity.addFirstMember(identity.address);
     await ens.setOwner(ensDomainHash, identityRegistry.address);
     await identityRegistry.addEnsRootNode(ensDomainHash);
+
+    // creating admin identity
+    await identityRegistry.createSelfIdentity(ensDomainHash, getLabelHash('admin'))
   });
 };
