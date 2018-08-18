@@ -1,12 +1,12 @@
 pragma solidity ^0.4.24;
 
-import "./abstract/IdentityTransactionManager.sol";
+import "./abstract/IdentityTransaction.sol";
 import "./IdentityMemberHolder.sol";
 
 /**
- * Identity Transaction Manager
+ * Identity Transaction
  */
-contract IdentityTransactionManager is AbstractIdentityTransactionManager, IdentityMemberHolder {
+contract IdentityTransaction is AbstractIdentityTransaction, IdentityMemberHolder {
 
   constructor() internal {
     //
@@ -48,7 +48,7 @@ contract IdentityTransactionManager is AbstractIdentityTransactionManager, Ident
 
     bool succeeded = _to.call.value(_value)(_data);
 
-    if (succeeded && _value > 0 && members[_sender].limited) {
+    if (succeeded && !members[_sender].unlimited && _value > 0) {
       members[_sender].limit -= _value;
 
       emit MemberLimitUpdated(_sender, _nonce, _sender, members[_sender].limit);

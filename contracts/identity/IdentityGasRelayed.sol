@@ -3,12 +3,12 @@ pragma solidity ^0.4.24;
 import "../libs/SignatureLib.sol";
 import "./abstract/IdentityGasRelayed.sol";
 import "./IdentityClaimHolder.sol";
-import "./IdentityTransactionManager.sol";
+import "./IdentityTransaction.sol";
 
 /**
  * Identity Gas Relayed
  */
-contract IdentityGasRelayed is AbstractIdentityGasRelayed, IdentityClaimHolder, IdentityTransactionManager {
+contract IdentityGasRelayed is AbstractIdentityGasRelayed, IdentityClaimHolder, IdentityTransaction {
 
   using SignatureLib for bytes;
 
@@ -37,6 +37,7 @@ contract IdentityGasRelayed is AbstractIdentityGasRelayed, IdentityClaimHolder, 
    * @param _member member address
    * @param _purpose purpose contract address
    * @param _limit member limit
+   * @param _unlimited member is unlimited
    * @param _extraGas transaction gas limit
    * @param _messageSignature transaction message signature
    */
@@ -45,6 +46,7 @@ contract IdentityGasRelayed is AbstractIdentityGasRelayed, IdentityClaimHolder, 
     address _member,
     address _purpose,
     uint256 _limit,
+    bool _unlimited,
     uint256 _extraGas,
     bytes _messageSignature
   ) public gasRelayed(_extraGas) {
@@ -56,11 +58,12 @@ contract IdentityGasRelayed is AbstractIdentityGasRelayed, IdentityClaimHolder, 
         _member,
         _purpose,
         _limit,
+        _unlimited,
         _extraGas,
         tx.gasprice
       ));
 
-    _addMember(messageSigner, _nonce, _member, _purpose, _limit);
+    _addMember(messageSigner, _nonce, _member, _purpose, _limit, _unlimited);
   }
 
   /**

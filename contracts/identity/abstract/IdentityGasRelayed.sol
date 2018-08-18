@@ -12,6 +12,7 @@ contract AbstractIdentityGasRelayed {
     address _member,
     address _purpose,
     uint256 _limit,
+    bool _unlimited,
     uint256 _extraGas,
     bytes _messageSignature
   ) public;

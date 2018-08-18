@@ -1,9 +1,9 @@
 pragma solidity ^0.4.24;
 
 /**
- * Identity Nonce Manager
+ * Identity Nonce
  */
-contract IdentityNonceManager {
+contract IdentityNonce {
 
   uint256 public nonce;
 

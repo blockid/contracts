@@ -8,21 +8,25 @@ import "./IdentityGasRelayed.sol";
  */
 contract Identity is AbstractIdentity, IdentityGasRelayed {
 
+  bool called;
+
   /**
    * adds first member
    *
    * @param _member first member address
    */
   function addFirstMember(address _member) public {
-    address purpose = address(this);
-
     require(
-      membersByPurpose[purpose].length == 0,
+      !called,
       "Method already called"
     );
 
+    called = true;
+
+    address purpose = address(this);
+
     members[_member].purpose = purpose;
-    members[_member].limited = false;
+    members[_member].unlimited = true;
 
     membersByPurpose[purpose].push(_member);
   }

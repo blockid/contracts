@@ -11,18 +11,18 @@ import "./abstract/Identity.sol";
 /**
  * Identity Registry
  */
-contract IdentityRegistry is AbstractIdentityRegistry, Ownable {
+contract IdentityRegistry is AbstractIdentityRegistry {
 
   using AddressLib for address;
   using SignatureLib for bytes;
 
-  bytes32 constant ENS_REGISTRY_LABEL = keccak256("id");
+  bytes32 constant ENS_REGISTRY_LABEL = keccak256("registry");
 
   AbstractENS ens;
   ENSResolver ensResolver;
   address identityBase;
 
-  mapping(bytes32 => bool) supportedEnsRootNodes;
+  mapping(bytes32 => address) ensRootNodesOwners;
   mapping(address => bool) registeredIdentities;
 
   constructor(AbstractENS _ens, ENSResolver _ensResolver, address _identityBase) public {
@@ -39,7 +39,7 @@ contract IdentityRegistry is AbstractIdentityRegistry, Ownable {
    * @param _ensRootNode ENS root node
    */
   function ensRootNodeExists(bytes32 _ensRootNode) public view returns (bool) {
-    return supportedEnsRootNodes[_ensRootNode];
+    return ensRootNodesOwners[_ensRootNode] != address(0);
   }
 
   /**
@@ -58,7 +58,7 @@ contract IdentityRegistry is AbstractIdentityRegistry, Ownable {
    *
    * @param _ensRootNode ENS root node
    */
-  function addEnsRootNode(bytes32 _ensRootNode) public onlyOwner {
+  function addEnsRootNode(bytes32 _ensRootNode) public {
     require(
       ens.owner(_ensRootNode) == address(this),
       "ENS root node has different owner"
@@ -76,7 +76,7 @@ contract IdentityRegistry is AbstractIdentityRegistry, Ownable {
 
     ensResolver.setAddr(ensNode, address(this));
 
-    supportedEnsRootNodes[_ensRootNode] = true;
+    ensRootNodesOwners[_ensRootNode] = msg.sender;
 
     emit ENSRootNodeAdded(_ensRootNode);
   }
@@ -86,7 +86,7 @@ contract IdentityRegistry is AbstractIdentityRegistry, Ownable {
    *
    * @param _ensRootNode ENS root node
    */
-  function removeEnsRootNode(bytes32 _ensRootNode) public onlyOwner {
+  function removeEnsRootNode(bytes32 _ensRootNode) public {
     require(
       ensRootNodeExists(_ensRootNode),
       "ENS root node doesn't exists"
@@ -95,9 +95,9 @@ contract IdentityRegistry is AbstractIdentityRegistry, Ownable {
     bytes32 ensNode = keccak256(abi.encodePacked(_ensRootNode, ENS_REGISTRY_LABEL));
     ensResolver.setAddr(ensNode, address(0));
 
-    ens.setOwner(_ensRootNode, msg.sender);
+    ens.setOwner(_ensRootNode, ensRootNodesOwners[_ensRootNode]);
 
-    delete supportedEnsRootNodes[_ensRootNode];
+    delete ensRootNodesOwners[_ensRootNode];
 
     emit ENSRootNodeRemoved(_ensRootNode);
   }

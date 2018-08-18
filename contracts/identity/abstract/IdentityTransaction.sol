@@ -1,9 +1,9 @@
 pragma solidity ^0.4.24;
 
 /**
- * Abstract Identity Transaction Manager
+ * Abstract Identity Transaction
  */
-contract AbstractIdentityTransactionManager {
+contract AbstractIdentityTransaction {
 
   // events
 

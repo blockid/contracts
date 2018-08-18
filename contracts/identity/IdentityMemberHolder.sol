@@ -2,19 +2,19 @@ pragma solidity ^0.4.24;
 
 import "../libs/AddressArrayLib.sol";
 import "./abstract/IdentityMemberHolder.sol";
-import "./IdentityNonceManager.sol";
+import "./IdentityNonce.sol";
 
 /**
  * Identity Member Holder
  */
-contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceManager {
+contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonce {
 
   using AddressArrayLib for address[];
 
   struct Member {
     address purpose;
     uint256 limit;
-    bool limited;
+    bool unlimited;
     address manager;
   }
 
@@ -40,10 +40,11 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceMana
    *
    * @param _member member address
    */
-  function getMember(address _member) public view returns (address purpose, uint256 limit, bool limited) {
+  function getMember(address _member) public view returns (address purpose, uint256 limit, bool unlimited, address manager) {
     purpose = members[_member].purpose;
     limit = members[_member].limit;
-    limited = members[_member].limited;
+    unlimited = members[_member].unlimited;
+    manager = members[_member].manager;
     return;
   }
 
@@ -82,7 +83,7 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceMana
    * @param _limit limit
    */
   function verifyMemberLimit(address _member, uint256 _limit) public view returns (bool) {
-    return memberExists(_member) && (!members[_member].limited || members[_member].limit >= _limit);
+    return memberExists(_member) && (members[_member].unlimited || members[_member].limit >= _limit);
   }
 
   // public methods
@@ -94,9 +95,10 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceMana
    * @param _member member address
    * @param _purpose purpose contract address
    * @param _limit member limit
+   * @param _unlimited member is unlimited
    */
-  function addMember(uint256 _nonce, address _member, address _purpose, uint256 _limit) public {
-    _addMember(msg.sender, _nonce, _member, _purpose, _limit);
+  function addMember(uint256 _nonce, address _member, address _purpose, uint256 _limit, bool _unlimited) public {
+    _addMember(msg.sender, _nonce, _member, _purpose, _limit, _unlimited);
   }
 
   /**
@@ -122,31 +124,44 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceMana
 
   // internal methods
 
-  function _addMember(address _sender, uint256 _nonce, address _member, address _purpose, uint256 _limit) internal onlySelfPurpose(_sender) verifyNonce(_nonce) {
+  function _addMember(address _sender, uint256 _nonce, address _member, address _purpose, uint256 _limit, bool _unlimited) internal onlySelfPurpose(_sender) verifyNonce(_nonce) {
     require(
       !memberExists(_member),
       "Member already exists"
     );
     require(
-      !members[_sender].limited || (_limit > 0 && members[_sender].limit >= _limit),
+      members[_sender].unlimited ||
+      (
+      !_unlimited &&
+      members[_sender].limit >= _limit
+      ),
       "Invalid sender limit"
+    );
+    require(
+      !_unlimited || (_unlimited && _limit == 0),
+      "Invalid limit"
     );
 
     membersByPurpose[_purpose].push(_member);
 
     members[_member].purpose = _purpose;
     members[_member].limit = _limit;
-    members[_member].limited = _limit > 0;
+    members[_member].unlimited = _unlimited;
 
-    if (members[_sender].limited) {
-      members[_member].manager = _sender;
+    address manager;
 
-      members[_sender].limit -= _limit;
+    if (!members[_sender].unlimited) {
+      manager = _sender;
+      members[_member].manager = manager;
 
-      emit MemberLimitUpdated(_sender, _nonce, _sender, members[_sender].limit);
+      if (_limit > 0) {
+        members[_sender].limit -= _limit;
+
+        emit MemberLimitUpdated(_sender, _nonce, _sender, members[_sender].limit);
+      }
     }
 
-    emit MemberAdded(_sender, _nonce, _member, _purpose, _limit);
+    emit MemberAdded(_sender, _nonce, _member, _purpose, _limit, _unlimited, manager);
   }
 
   function _updateMemberLimit(address _sender, uint256 _nonce, address _member, uint256 _limit) internal onlySelfPurpose(_sender) verifyNonce(_nonce) {
@@ -155,32 +170,32 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceMana
       "Member doesn't exists"
     );
     require(
-      _limit != members[_member].limit && members[_member].limited,
+      _limit != members[_member].limit &&
+      !members[_member].unlimited,
       "Invalid member limit"
     );
 
-    if (!members[_sender].limited) {
-      members[_member].manager = address(0); // reset manager
-    } else {
-      require(
-        members[_member].manager == _sender,
-        "Sender is not member manager"
-      );
+    require(
+      members[_sender].unlimited ||
+      (
+      members[_member].manager == _sender && // checks manager
+      members[_sender].limit >= _limit - members[_member].limit
+      ),
+      "Invalid sender or sender limit"
+    );
 
-      if (_limit > members[_member].limit) {
-        uint limitDiff = _limit - members[_member].limit;
+    address manager = members[_member].manager;
 
-        require(
-          verifyMemberLimit(_sender, limitDiff),
-          "Invalid sender limit"
-        );
-
-        members[_sender].limit -= limitDiff;
+    if (manager != address(0)) {
+      if (!memberExists(manager)) {
+        // updates manager
+        members[_member].manager = address(0);
+        emit MemberManagerUpdated(_sender, _nonce, _member, address(0));
       } else {
-        members[_sender].limit += members[_member].limit - _limit;
+        // updates manager limit
+        members[manager].limit -= _limit - members[_member].limit;
+        emit MemberLimitUpdated(_sender, _nonce, manager, members[manager].limit);
       }
-
-      emit MemberLimitUpdated(_sender, _nonce, _sender, members[_sender].limit);
     }
 
     members[_member].limit = _limit;
@@ -194,13 +209,16 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceMana
       "Member doesn't exists"
     );
     require(
-      _sender != _member,
-      "Can not remove member"
+      _sender != _member && (members[_sender].unlimited || _sender == members[_member].manager),
+      "Invalid sender"
     );
 
-    if (members[_member].manager == _sender) {
-      members[_sender].limit += members[_member].limit;
-      emit MemberLimitUpdated(_sender, _nonce, _sender, members[_sender].limit);
+    address manager = members[_member].manager;
+
+    if (memberExists(manager)) {
+      // updates manager limit
+      members[manager].limit += members[_member].limit;
+      emit MemberLimitUpdated(_sender, _nonce, manager, members[manager].limit);
     }
 
     membersByPurpose[members[_member].purpose].remove(_member);
