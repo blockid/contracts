@@ -47,6 +47,7 @@ contract('IdentityGasRelayed', (accounts) => {
           'address',
           'address',
           'uint256',
+          'bool',
           'uint256',
           'bytes',
         );
@@ -66,6 +67,7 @@ contract('IdentityGasRelayed', (accounts) => {
           member,
           purpose,
           limit,
+          false,
           extraGas,
           gasPrice,
         );
@@ -75,13 +77,14 @@ contract('IdentityGasRelayed', (accounts) => {
           member,
           purpose,
           limit,
+          false,
           extraGas,
           messageSignature, {
             from: gasStation,
           },
         );
 
-        assert.equal(log.event, 'MemberAdded');
+        assert.strictEqual(log.event, 'MemberAdded');
       });
     });
 
@@ -128,7 +131,7 @@ contract('IdentityGasRelayed', (accounts) => {
           },
         );
 
-        assert.equal(log.event, 'TransactionExecuted');
+        assert.strictEqual(log.event, 'TransactionExecuted');
       });
     });
   });

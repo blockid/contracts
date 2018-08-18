@@ -35,6 +35,6 @@ contract('ENS', (accounts) => {
 
     const address = await ensResolver.addr(nameHash);
 
-    assert.equal(address, accounts[1]);
+    assert.strictEqual(address, accounts[1]);
   });
 });

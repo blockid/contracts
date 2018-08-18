@@ -57,10 +57,10 @@ contract('IdentityClaimHolder', (accounts) => {
       it('should return valid claim', async () => {
         const [issuer, topic, data, signingNonce] = await identity.getClaim(claimer.address, 1);
 
-        assert.equal(issuer, claimer.address);
-        assert.equal(topic.toNumber(10), 1);
-        assert.equal(data, '0x0a1b2c');
-        assert.equal(signingNonce, 0);
+        assert.strictEqual(issuer, claimer.address);
+        assert.strictEqual(topic.toNumber(10), 1);
+        assert.strictEqual(data, '0x0a1b2c');
+        assert.strictEqual(signingNonce.toNumber(10), 0);
       });
     });
 
@@ -103,11 +103,11 @@ contract('IdentityClaimHolder', (accounts) => {
           from: accounts[1],
         });
 
-        assert.equal(log.event, 'ClaimAdded');
-        assert.equal(log.args.issuer, claimer.address);
-        assert.equal(log.args.topic.toNumber(10), 1);
-        assert.equal(log.args.data, '0x0a1b2c');
-        assert.equal(log.args.signature, signature);
+        assert.strictEqual(log.event, 'ClaimAdded');
+        assert.strictEqual(log.args.issuer, claimer.address);
+        assert.strictEqual(log.args.topic.toNumber(10), 1);
+        assert.strictEqual(log.args.data, '0x0a1b2c');
+        assert.strictEqual(log.args.signature, signature);
       });
 
       it('should fail on invalid claim signature', (done) => {
@@ -141,9 +141,9 @@ contract('IdentityClaimHolder', (accounts) => {
           from: accounts[1],
         });
 
-        assert.equal(log.event, 'ClaimRemoved');
-        assert.equal(log.args.issuer, claimer.address);
-        assert.equal(log.args.topic.toNumber(10), 1);
+        assert.strictEqual(log.event, 'ClaimRemoved');
+        assert.strictEqual(log.args.issuer, claimer.address);
+        assert.strictEqual(log.args.topic.toNumber(10), 1);
       });
     });
   });

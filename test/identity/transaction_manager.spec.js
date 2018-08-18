@@ -34,11 +34,11 @@ contract('IdentityTransactionManager', (accounts) => {
 
       identity = Identity.at(log.args.identity);
 
-      await identity.addMember(nonce++, accounts[2], identity.address, ethToWei(0.2), {
+      await identity.addMember(nonce++, accounts[2], identity.address, ethToWei(0.2), false, {
         from: accounts[1],
       });
 
-      await identity.addMember(nonce++, accounts[3], accounts[4], ethToWei(0.3), {
+      await identity.addMember(nonce++, accounts[3], accounts[4], ethToWei(0.3), false, {
         from: accounts[1],
       });
     });
@@ -51,7 +51,7 @@ contract('IdentityTransactionManager', (accounts) => {
 
         balance = await getBalance(identity);
 
-        assert.equal(balance, ethToWei(2));
+        assert.strictEqual(balance.toNumber(10), ethToWei(2));
       });
     });
 
@@ -61,15 +61,15 @@ contract('IdentityTransactionManager', (accounts) => {
           from: accounts[1],
         });
 
-        assert.equal(log.event, 'TransactionExecuted');
-        assert.equal(log.args.to, accounts[5]);
-        assert.equal(log.args.value.toNumber(10), ethToWei(0.3));
-        assert.equal(log.args.data, '0x');
+        assert.strictEqual(log.event, 'TransactionExecuted');
+        assert.strictEqual(log.args.to, accounts[5]);
+        assert.strictEqual(log.args.value.toNumber(10), ethToWei(0.3));
+        assert.strictEqual(log.args.data, '0x');
         assert.isTrue(log.args.succeeded);
 
         balance = await getBalance(identity);
 
-        assert.equal(balance.toNumber(10), ethToWei(1.7));
+        assert.strictEqual(balance.toNumber(10), ethToWei(1.7));
       });
 
       it('should execute valid transaction by limited member', async () => {
@@ -77,19 +77,19 @@ contract('IdentityTransactionManager', (accounts) => {
           from: accounts[3],
         });
 
-        assert.equal(logs[0].event, 'MemberLimitUpdated');
-        assert.equal(logs[0].args.member, accounts[3]);
-        assert.equal(logs[0].args.limit.toNumber(10), ethToWei(0.2));
+        assert.strictEqual(logs[0].event, 'MemberLimitUpdated');
+        assert.strictEqual(logs[0].args.member, accounts[3]);
+        assert.strictEqual(logs[0].args.limit.toNumber(10), ethToWei(0.2));
 
-        assert.equal(logs[1].event, 'TransactionExecuted');
-        assert.equal(logs[1].args.to, accounts[4]);
-        assert.equal(logs[1].args.value.toNumber(10), ethToWei(0.1));
-        assert.equal(logs[1].args.data, '0x');
+        assert.strictEqual(logs[1].event, 'TransactionExecuted');
+        assert.strictEqual(logs[1].args.to, accounts[4]);
+        assert.strictEqual(logs[1].args.value.toNumber(10), ethToWei(0.1));
+        assert.strictEqual(logs[1].args.data, '0x');
         assert.isTrue(logs[1].args.succeeded);
 
         balance = await getBalance(identity);
 
-        assert.equal(balance.toNumber(10), ethToWei(1.6));
+        assert.strictEqual(balance.toNumber(10), ethToWei(1.6));
       });
 
       it('should fail on invalid member limit', (done) => {

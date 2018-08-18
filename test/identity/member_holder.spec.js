@@ -33,11 +33,11 @@ contract('IdentityMemberHolder', (accounts) => {
 
       identity = Identity.at(log.args.identity);
 
-      await identity.addMember(nonce++, accounts[2], accounts[3], ethToWei(1), {
+      await identity.addMember(nonce++, accounts[2], accounts[3], ethToWei(1), false, {
         from: accounts[1],
       });
 
-      await identity.addMember(nonce++, accounts[3], accounts[3], ethToWei(1), {
+      await identity.addMember(nonce++, accounts[3], accounts[3], ethToWei(1), false, {
         from: accounts[1],
       });
     });
@@ -45,19 +45,19 @@ contract('IdentityMemberHolder', (accounts) => {
     describe("#getMember()", () => {
 
       it("should returns accounts[1] member", async () => {
-        const [purpose, limit, limited] = await identity.getMember(accounts[1]);
+        const [purpose, limit, unlimited] = await identity.getMember(accounts[1]);
 
-        assert.equal(purpose, identity.address);
-        assert.equal(limit.toNumber(), 0);
-        assert.isFalse(limited);
+        assert.strictEqual(purpose, identity.address);
+        assert.strictEqual(limit.toNumber(), 0);
+        assert.isTrue(unlimited);
       });
 
       it("should returns accounts[2] member", async () => {
-        const [purpose, limit, limited] = await identity.getMember(accounts[2]);
+        const [purpose, limit, unlimited] = await identity.getMember(accounts[2]);
 
-        assert.equal(purpose, accounts[3]);
-        assert.equal(limit.toNumber(), ethToWei(1));
-        assert.isTrue(limited);
+        assert.strictEqual(purpose, accounts[3]);
+        assert.strictEqual(limit.toNumber(), ethToWei(1));
+        assert.isFalse(unlimited);
       });
     });
 
@@ -66,9 +66,9 @@ contract('IdentityMemberHolder', (accounts) => {
       it("should returns valid member list", async () => {
         const list = await identity.getPurposeMembers(accounts[3]);
 
-        assert.equal(list.length, 2);
-        assert.equal(list[0], accounts[2]);
-        assert.equal(list[1], accounts[3]);
+        assert.strictEqual(list.length, 2);
+        assert.strictEqual(list[0], accounts[2]);
+        assert.strictEqual(list[1], accounts[3]);
       });
 
     });
@@ -153,29 +153,29 @@ contract('IdentityMemberHolder', (accounts) => {
 
     describe("#addMember()", () => {
       it('should add member with self purpose and limit of 1 eth by unlimited member', async () => {
-        const { logs: [log] } = await identity.addMember(nonce++, accounts[2], identity.address, ethToWei(1), {
+        const { logs: [log] } = await identity.addMember(nonce++, accounts[2], identity.address, ethToWei(1), false, {
           from: accounts[1],
         });
 
-        assert.equal(log.event, 'MemberAdded');
-        assert.equal(log.args.member, accounts[2]);
-        assert.equal(log.args.purpose, identity.address);
-        assert.equal(log.args.limit.toNumber(10), ethToWei(1));
+        assert.strictEqual(log.event, 'MemberAdded');
+        assert.strictEqual(log.args.member, accounts[2]);
+        assert.strictEqual(log.args.purpose, identity.address);
+        assert.strictEqual(log.args.limit.toNumber(10), ethToWei(1));
       });
 
       it('should add member with outside purpose and limit of 0.2 eth by limited member', async () => {
-        const { logs } = await identity.addMember(nonce++, accounts[3], accounts[3], ethToWei(0.2), {
+        const { logs } = await identity.addMember(nonce++, accounts[3], accounts[3], ethToWei(0.2), false, {
           from: accounts[2],
         });
 
-        assert.equal(logs[0].event, 'MemberLimitUpdated');
-        assert.equal(logs[0].args.member, accounts[2]);
-        assert.equal(logs[0].args.limit.toNumber(10), ethToWei(0.8));
+        assert.strictEqual(logs[0].event, 'MemberLimitUpdated');
+        assert.strictEqual(logs[0].args.member, accounts[2]);
+        assert.strictEqual(logs[0].args.limit.toNumber(10), ethToWei(0.8));
 
-        assert.equal(logs[1].event, 'MemberAdded');
-        assert.equal(logs[1].args.member, accounts[3]);
-        assert.equal(logs[1].args.purpose, accounts[3]);
-        assert.equal(logs[1].args.limit.toNumber(10), ethToWei(0.2));
+        assert.strictEqual(logs[1].event, 'MemberAdded');
+        assert.strictEqual(logs[1].args.member, accounts[3]);
+        assert.strictEqual(logs[1].args.purpose, accounts[3]);
+        assert.strictEqual(logs[1].args.limit.toNumber(10), ethToWei(0.2));
       });
     });
 
@@ -185,9 +185,9 @@ contract('IdentityMemberHolder', (accounts) => {
           from: accounts[1],
         });
 
-        assert.equal(log.event, 'MemberLimitUpdated');
-        assert.equal(log.args.member, accounts[2]);
-        assert.equal(log.args.limit.toNumber(10), ethToWei(2));
+        assert.strictEqual(log.event, 'MemberLimitUpdated');
+        assert.strictEqual(log.args.member, accounts[2]);
+        assert.strictEqual(log.args.limit.toNumber(10), ethToWei(2));
       });
     });
 
@@ -198,12 +198,12 @@ contract('IdentityMemberHolder', (accounts) => {
           from: accounts[2],
         });
 
-        assert.equal(logs[0].event, 'MemberLimitUpdated');
-        assert.equal(logs[0].args.member, accounts[2]);
-        assert.equal(logs[0].args.limit.toNumber(10), ethToWei(2.2));
+        assert.strictEqual(logs[0].event, 'MemberLimitUpdated');
+        assert.strictEqual(logs[0].args.member, accounts[2]);
+        assert.strictEqual(logs[0].args.limit.toNumber(10), ethToWei(2.2));
 
-        assert.equal(logs[1].event, 'MemberRemoved');
-        assert.equal(logs[1].args.member, accounts[3]);
+        assert.strictEqual(logs[1].event, 'MemberRemoved');
+        assert.strictEqual(logs[1].args.member, accounts[3]);
       });
 
       it('should remove member by unlimited', async () => {
@@ -211,8 +211,8 @@ contract('IdentityMemberHolder', (accounts) => {
           from: accounts[1],
         });
 
-        assert.equal(log.event, 'MemberRemoved');
-        assert.equal(log.args.member, accounts[2]);
+        assert.strictEqual(log.event, 'MemberRemoved');
+        assert.strictEqual(log.args.member, accounts[2]);
       });
     });
   });

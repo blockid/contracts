@@ -22,14 +22,14 @@ contract('IdentityRegistry', (accounts) => {
 
     it('should return valid ens owner', async () => {
       const owner = await ens.owner(ensRoot.nameHash);
-      assert.equal(owner, registry.address);
+      assert.strictEqual(owner, registry.address);
     });
 
     it('should return registry address for "id" ens label', async () => {
-      const ensName = `id.${ensRoot.name}`;
+      const ensName = `registry.${ensRoot.name}`;
       const ensNameHash = getNameHash(ensName);
       const address = await ensResolver.addr(ensNameHash);
-      assert.equal(address, registry.address);
+      assert.strictEqual(address, registry.address);
     });
   });
 
@@ -45,8 +45,8 @@ contract('IdentityRegistry', (accounts) => {
 
       const { logs: [log] } = await registry.createIdentity(ensRoot.nameHash, ensLabelHash, messageSignature);
 
-      assert.equal(log.event, 'IdentityCreated');
-      assert.equal(log.args.member, messageSigner);
+      assert.strictEqual(log.event, 'IdentityCreated');
+      assert.strictEqual(log.args.member, messageSigner);
 
       identity = Identity.at(log.args.identity);
     });
@@ -78,22 +78,22 @@ contract('IdentityRegistry', (accounts) => {
 
         const { logs: [log] } = await registry.createIdentity(ensRoot.nameHash, ensLabelHash, messageSignature);
 
-        assert.equal(log.event, 'IdentityCreated');
-        assert.equal(log.args.member, messageSigner);
+        assert.strictEqual(log.event, 'IdentityCreated');
+        assert.strictEqual(log.args.member, messageSigner);
 
         {
           const address = await ens.owner(ensNameHash);
-          assert.equal(address, registry.address);
+          assert.strictEqual(address, registry.address);
         }
 
         {
           const address = await ens.resolver(ensNameHash);
-          assert.equal(address, ensResolver.address);
+          assert.strictEqual(address, ensResolver.address);
         }
 
         {
           const address = await ensResolver.addr(ensNameHash);
-          assert.equal(address, log.args.identity);
+          assert.strictEqual(address, log.args.identity);
         }
       });
     });

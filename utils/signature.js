@@ -15,6 +15,9 @@ function getMessageSignature(account, ...args) {
         arg = arg.toString(16);
         arg = `${('0').repeat(64 - arg.length)}${arg}`; // uint256
         break;
+      case 'boolean':
+        arg = arg ? '01' : '00'; // bool
+        break;
     }
 
     if (typeof arg === 'string') {

@@ -6,6 +6,7 @@ module.exports = {
     test: {
       provider: new Web3.providers.HttpProvider(process.env.TEST_ENDPOINT),
       network_id: "1000",
+      gas: 6200000,
     },
     prod: {
       provider: function() {
@@ -15,7 +16,7 @@ module.exports = {
         );
       },
       network_id: 4,
-      gas: 6000000,
+      gas: 6200000,
     },
     solc: {
       optimizer: {
