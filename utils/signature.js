@@ -1,5 +1,5 @@
 const { sign } = require('secp256k1');
-const { hashPersonalMessage } = require('blockid');
+const { hashPersonalMessage } = require('blockid-core');
 const { sha3 } = require('./web3');
 const { getPrivateKey } = require('./accounts');
 
