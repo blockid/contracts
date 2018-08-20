@@ -9,7 +9,7 @@ contract AbstractIdentityRegistry {
 
   event ENSRootNodeAdded(bytes32 ensRootNode);
   event ENSRootNodeRemoved(bytes32 ensRootNode);
-  event IdentityCreated(address identity, address member);
+  event IdentityCreated(address identity, address member, bytes32 ensRootNode, bytes32 ensLabel);
 
   // methods
 
@@ -22,4 +22,6 @@ contract AbstractIdentityRegistry {
   function removeEnsRootNode(bytes32 _ensRootNode) public;
 
   function createIdentity(bytes32 _ensRootNode, bytes32 _ensLabel, bytes _messageSignature) public;
+
+  function createSelfIdentity(bytes32 _ensRootNode, bytes32 _ensLabel) public;
 }

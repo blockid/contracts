@@ -1,7 +1,7 @@
 {
   "name": "@blockid/contracts",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Block ID Solidity Contracts",
   "author": {
     "name": "Stanislaw Glogowski",
@@ -24,7 +24,7 @@
   "dependencies": {
     "bignumber.js": "^7.2.1",
     "bip39": "^2.5.0",
-    "blockid-core": "^0.1.0-alpha",
+    "blockid-core": "^0.1.0-alpha.6",
     "eth-ens-namehash": "^2.0.8",
     "ethereumjs-wallet": "0.6.0",
     "ganache-cli": "^6.1.4",

@@ -139,7 +139,7 @@ contract IdentityRegistry is AbstractIdentityRegistry {
 
     registeredIdentities[identity] = true;
 
-    emit IdentityCreated(identity, messageSigner);
+    emit IdentityCreated(identity, messageSigner, _ensRootNode, _ensLabel);
   }
 
   /**
@@ -172,6 +172,6 @@ contract IdentityRegistry is AbstractIdentityRegistry {
 
     registeredIdentities[identity] = true;
 
-    emit IdentityCreated(identity, msg.sender);
+    emit IdentityCreated(identity, msg.sender, _ensRootNode, _ensLabel);
   }
 }
