@@ -12,56 +12,7 @@ library SignatureLib {
 
     (v, r, s) = parseSignature(_self);
 
-    string memory header = "\x19Ethereum Signed Message:\n000000";
-
-    uint256 length;
-    uint256 lengthOffset;
-    assembly {
-      length := mload(_message)
-      lengthOffset := add(header, 57)
-    }
-
-    require(
-      length <= 999999,
-      "Invalid message length"
-    );
-
-    uint256 lengthLength = 0;
-    uint256 divisor = 100000;
-
-    while (divisor != 0) {
-      uint256 digit = length / divisor;
-
-      if (digit == 0) {
-        if (lengthLength == 0) {
-          divisor /= 10;
-          continue;
-        }
-      }
-
-      lengthLength++;
-      length -= digit * divisor;
-      divisor /= 10;
-
-      digit += 0x30;
-      lengthOffset++;
-
-      assembly {
-        mstore8(lengthOffset, digit)
-      }
-    }
-
-    if (lengthLength == 0) {
-      lengthLength = 1 + 0x19 + 1;
-    } else {
-      lengthLength += 1 + 0x19;
-    }
-
-    assembly {
-      mstore(header, lengthLength)
-    }
-
-    bytes32 hash = keccak256(abi.encodePacked(header, _message));
+    bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(_message)));
 
     return ecrecover(hash, v, r, s);
   }

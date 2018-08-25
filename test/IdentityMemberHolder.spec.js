@@ -1,12 +1,9 @@
-const { getLabelHash } = require('../../utils/ens');
-const { getMessageSignature } = require('../../utils/signature');
-const { ethToWei } = require('../../utils/web3');
-const { ensRoot } = require('./constans');
+const { getRandomEnsNameInfo } = require('./utils');
 
 const ENSMock = artifacts.require('ENSMock.sol');
 const ENSResolver = artifacts.require('ENSResolver.sol');
 const Identity = artifacts.require('Identity.sol');
-const IdentityRegistry = artifacts.require('IdentityRegistry.sol');
+const Registry = artifacts.require('Registry.sol');
 
 contract('IdentityMemberHolder', (accounts) => {
   let ens;
@@ -16,7 +13,7 @@ contract('IdentityMemberHolder', (accounts) => {
   before(async () => {
     ens = await ENSMock.deployed();
     ensResolver = await ENSResolver.deployed();
-    registry = await IdentityRegistry.deployed();
+    registry = await Registry.deployed();
   });
 
   describe("views", () => {
@@ -24,20 +21,19 @@ contract('IdentityMemberHolder', (accounts) => {
     let nonce = 0;
 
     before(async () => {
-      const ensName = `idmhv.${ensRoot.name}`;
-      const ensLabelHash = getLabelHash(ensName);
+      const { labelHash, rootNode } = getRandomEnsNameInfo();
 
-      const messageSignature = getMessageSignature(accounts[1], registry.address, ensRoot.nameHash, ensLabelHash);
-
-      const { logs: [log] } = await registry.createIdentity(ensRoot.nameHash, ensLabelHash, messageSignature);
-
-      identity = Identity.at(log.args.identity);
-
-      await identity.addMember(nonce++, accounts[2], accounts[3], ethToWei(1), false, {
+      const { logs: [log] } = await registry.createSelfIdentity(labelHash, rootNode.nameHash, {
         from: accounts[1],
       });
 
-      await identity.addMember(nonce++, accounts[3], accounts[3], ethToWei(1), false, {
+      identity = Identity.at(log.args.identity);
+
+      await identity.addMember(nonce++, accounts[2], accounts[3], 20, false, {
+        from: accounts[1],
+      });
+
+      await identity.addMember(nonce++, accounts[3], accounts[3], 30, false, {
         from: accounts[1],
       });
     });
@@ -56,7 +52,7 @@ contract('IdentityMemberHolder', (accounts) => {
         const [purpose, limit, unlimited] = await identity.getMember(accounts[2]);
 
         assert.strictEqual(purpose, accounts[3]);
-        assert.strictEqual(limit.toNumber(), ethToWei(1));
+        assert.strictEqual(limit.toNumber(), 20);
         assert.isFalse(unlimited);
       });
     });
@@ -109,7 +105,7 @@ contract('IdentityMemberHolder', (accounts) => {
 
       it("should returns always true when member is unlimited", async () => {
         {
-          const result = await identity.verifyMemberLimit(accounts[1], ethToWei(1));
+          const result = await identity.verifyMemberLimit(accounts[1], 10);
           assert.isTrue(result);
         }
         {
@@ -120,17 +116,17 @@ contract('IdentityMemberHolder', (accounts) => {
 
       it("should returns true for valid limit when member is limited ", async () => {
         {
-          const result = await identity.verifyMemberLimit(accounts[2], ethToWei(1));
+          const result = await identity.verifyMemberLimit(accounts[2], 20);
           assert.isTrue(result);
         }
         {
-          const result = await identity.verifyMemberLimit(accounts[2], ethToWei(0.5));
+          const result = await identity.verifyMemberLimit(accounts[3], 30);
           assert.isTrue(result);
         }
       });
 
       it("should returns false for invalid limit when member is limited ", async () => {
-        const result = await identity.verifyMemberLimit(accounts[2], ethToWei(2));
+        const result = await identity.verifyMemberLimit(accounts[2], 40);
         assert.isFalse(result);
       });
     });
@@ -141,53 +137,52 @@ contract('IdentityMemberHolder', (accounts) => {
     let nonce = 0;
 
     before(async () => {
-      const ensName = `idmhm.${ensRoot.name}`;
-      const ensLabelHash = getLabelHash(ensName);
+      const { labelHash, rootNode } = getRandomEnsNameInfo();
 
-      const messageSignature = getMessageSignature(accounts[1], registry.address, ensRoot.nameHash, ensLabelHash);
-
-      const { logs: [log] } = await registry.createIdentity(ensRoot.nameHash, ensLabelHash, messageSignature);
+      const { logs: [log] } = await registry.createSelfIdentity(labelHash, rootNode.nameHash, {
+        from: accounts[1],
+      });
 
       identity = Identity.at(log.args.identity);
     });
 
     describe("#addMember()", () => {
-      it('should add member with self purpose and limit of 1 eth by unlimited member', async () => {
-        const { logs: [log] } = await identity.addMember(nonce++, accounts[2], identity.address, ethToWei(1), false, {
+      it('should add member with self purpose and limit of 10 wei by unlimited member', async () => {
+        const { logs: [log] } = await identity.addMember(nonce++, accounts[2], identity.address, 10, false, {
           from: accounts[1],
         });
 
         assert.strictEqual(log.event, 'MemberAdded');
         assert.strictEqual(log.args.member, accounts[2]);
         assert.strictEqual(log.args.purpose, identity.address);
-        assert.strictEqual(log.args.limit.toNumber(10), ethToWei(1));
+        assert.strictEqual(log.args.limit.toNumber(10), 10);
       });
 
-      it('should add member with outside purpose and limit of 0.2 eth by limited member', async () => {
-        const { logs } = await identity.addMember(nonce++, accounts[3], accounts[3], ethToWei(0.2), false, {
+      it('should add member with outside purpose and limit of 3 eth by limited member', async () => {
+        const { logs } = await identity.addMember(nonce++, accounts[3], accounts[3], 3, false, {
           from: accounts[2],
         });
 
         assert.strictEqual(logs[0].event, 'MemberLimitUpdated');
         assert.strictEqual(logs[0].args.member, accounts[2]);
-        assert.strictEqual(logs[0].args.limit.toNumber(10), ethToWei(0.8));
+        assert.strictEqual(logs[0].args.limit.toNumber(10), 7);
 
         assert.strictEqual(logs[1].event, 'MemberAdded');
         assert.strictEqual(logs[1].args.member, accounts[3]);
         assert.strictEqual(logs[1].args.purpose, accounts[3]);
-        assert.strictEqual(logs[1].args.limit.toNumber(10), ethToWei(0.2));
+        assert.strictEqual(logs[1].args.limit.toNumber(10), 3);
       });
     });
 
     describe("#updateMemberLimit()", () => {
       it('should update member limit', async () => {
-        const { logs: [log] } = await identity.updateMemberLimit(nonce++, accounts[2], ethToWei(2), {
+        const { logs: [log] } = await identity.updateMemberLimit(nonce++, accounts[2], 20, {
           from: accounts[1],
         });
 
         assert.strictEqual(log.event, 'MemberLimitUpdated');
         assert.strictEqual(log.args.member, accounts[2]);
-        assert.strictEqual(log.args.limit.toNumber(10), ethToWei(2));
+        assert.strictEqual(log.args.limit.toNumber(10), 20);
       });
     });
 
@@ -200,7 +195,7 @@ contract('IdentityMemberHolder', (accounts) => {
 
         assert.strictEqual(logs[0].event, 'MemberLimitUpdated');
         assert.strictEqual(logs[0].args.member, accounts[2]);
-        assert.strictEqual(logs[0].args.limit.toNumber(10), ethToWei(2.2));
+        assert.strictEqual(logs[0].args.limit.toNumber(10), 23);
 
         assert.strictEqual(logs[1].event, 'MemberRemoved');
         assert.strictEqual(logs[1].args.member, accounts[3]);

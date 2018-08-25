@@ -1,10 +1,10 @@
-const { getNameHash, getLabelHash } = require('../utils/ens');
+const { getEnsLabelHash, getEnsNameHash } = require('blockid');
 
 const ENSMock = artifacts.require('ENSMock.sol');
 const ENSRegistrarMock = artifacts.require('ENSRegistrarMock.sol');
 const ENSResolver = artifacts.require('ENSResolver.sol');
 
-contract('ENS', (accounts) => {
+contract('ENSRegistrarMock', (accounts) => {
   let ens;
   let ensRegistrar;
   let ensResolver;
@@ -17,9 +17,8 @@ contract('ENS', (accounts) => {
 
   it('should register name account1.test for accounts[1]', async () => {
 
-    const name = 'account1.test';
-    const nameHash = getNameHash(name);
-    const labelHash = getLabelHash(name);
+    const nameHash = getEnsNameHash('account1.test');
+    const labelHash = getEnsLabelHash('account1');
 
     await ensRegistrar.register(labelHash, accounts[1], {
       from: accounts[0],

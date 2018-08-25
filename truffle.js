@@ -1,10 +1,12 @@
+const { NetworkProvider } = require("blockid");
 const HDWalletProvider = require("truffle-hdwallet-provider");
-const Web3 = require("web3");
 
 module.exports = {
   networks: {
     test: {
-      provider: new Web3.providers.HttpProvider(process.env.TEST_ENDPOINT),
+      provider: function() {
+        return new NetworkProvider(process.env.TEST_ENDPOINT);
+      },
       network_id: "1000",
       gas: 6200000,
     },

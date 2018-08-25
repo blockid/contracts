@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 /**
- * Abstract Identity
+ * Abstract Identity Member Holder
  */
 contract AbstractIdentityMemberHolder {
 

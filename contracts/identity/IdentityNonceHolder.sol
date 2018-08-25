@@ -1,11 +1,11 @@
 pragma solidity ^0.4.24;
 
-/**
- * Identity Nonce
- */
-contract IdentityNonce {
+import "./abstract/IdentityNonceHolder.sol";
 
-  uint256 public nonce;
+/**
+ * Identity Nonce Holder
+ */
+contract IdentityNonceHolder is AbstractIdentityNonceHolder {
 
   modifier verifyNonce(uint256 _nonce) {
     require(

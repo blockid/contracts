@@ -2,12 +2,12 @@ pragma solidity ^0.4.24;
 
 import "../libs/AddressArrayLib.sol";
 import "./abstract/IdentityMemberHolder.sol";
-import "./IdentityNonce.sol";
+import "./IdentityNonceHolder.sol";
 
 /**
  * Identity Member Holder
  */
-contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonce {
+contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceHolder {
 
   using AddressArrayLib for address[];
 
@@ -25,6 +25,17 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonce {
     require(
       memberHasPurpose(_member, address(this)),
       "Revert by onlySelfPurpose modifier"
+    );
+    _;
+  }
+
+  modifier onlySelfPurposeWithLimit(address _member) {
+    require(
+      (
+      memberHasPurpose(_member, address(this)) &&
+      verifyMemberLimit(_member, 1)
+      ),
+      "Revert by onlySelfPurposeWithLimit modifier"
     );
     _;
   }
@@ -124,7 +135,7 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonce {
 
   // internal methods
 
-  function _addMember(address _sender, uint256 _nonce, address _member, address _purpose, uint256 _limit, bool _unlimited) internal onlySelfPurpose(_sender) verifyNonce(_nonce) {
+  function _addMember(address _sender, uint256 _nonce, address _member, address _purpose, uint256 _limit, bool _unlimited) internal onlySelfPurposeWithLimit(_sender) verifyNonce(_nonce) {
     require(
       !memberExists(_member),
       "Member already exists"
