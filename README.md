@@ -79,8 +79,8 @@ $ npm test
 |--------------------	|----------------------------------------------	|
 | `ENSMock` 	| `0xd373171f3f9b3da8552287174583dd57843c7002` 	|
 | `ENSRegistrarMock` 	| `0x29c7ab991d282fc7ebab881443c4ddb9e78c3f53` 	|
-| `ENSResolver` 	| `0xa8b89e50d841d71179968ee11875f702a92e820f` 	|
-| `Registry` 	| `0x86152e6682826f507feb04c9194312e338fe909c` 	|
+| `ENSResolver` 	| `0xf8eb936a7f20dd4d6ecfaeb6aa68218e17cf316c` 	|
+| `Registry` 	| `0x8c806655cc7a816e01a7c0719c0057f7d96f28cd` 	|
 
 ## License
 

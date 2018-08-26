@@ -1,8 +1,7 @@
 const {
-  prepareEnsName,
   getEnsNameHash,
   getEnsLabelHash,
-  splitEnsName,
+  getEnsNameInfo,
   prepareAddress,
 } = require('blockid');
 
@@ -19,11 +18,10 @@ module.exports = function(deployer, network, [account]) {
 
     switch (network) {
       case 'prod': {
-        const name = prepareEnsName(process.env.PROD_ENS_LABEL, process.env.PROD_ENS_ROOT_NODE);
-        const nameHash = getEnsNameHash(name);
-        const { label, rootNodeName } = splitEnsName(name);
-        const labelHash = getEnsLabelHash(label);
-        const rootNodeNameHash = getEnsNameHash(rootNodeName);
+        const { nameHash, labelHash, rootNode } = getEnsNameInfo(
+          process.env.PROD_ENS_LABEL,
+          process.env.PROD_ENS_ROOT_NODE,
+        );
 
         ens = AbstractENS.at(process.env.PROD_ENS_ADDRESS);
 
@@ -34,7 +32,7 @@ module.exports = function(deployer, network, [account]) {
             break;
 
           case null:
-            switch (rootNodeName) {
+            switch (rootNode.name) {
               case "test":
                 const registrarAddress = await ens.owner(rootNodeNameHash);
                 const registrar = AbstractENSFIFSRegistrar.at(registrarAddress);
@@ -55,9 +53,20 @@ module.exports = function(deployer, network, [account]) {
       }
       case 'test': {
         ens = await deployer.deploy(ENSMock);
+
+        const names = [
+          'blockid.test',
+          'demo.test',
+          'example.test',
+        ];
+
         const registrar = await deployer.deploy(ENSRegistrarMock, ens.address, getEnsNameHash('test'));
         await ens.setSubnodeOwner('0x0', getEnsLabelHash('test'), registrar.address);
-        await registrar.register(getEnsLabelHash('blockid'), account);
+
+        for (const name of names) {
+          const { labelHash } = getEnsNameInfo(name);
+          await registrar.register(labelHash, account);
+        }
         break;
       }
     }

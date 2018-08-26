@@ -34,7 +34,6 @@ module.exports = function(deployer, network) {
 
       case 'test':
         ens = AbstractENS.at(ENSMock.address);
-        nameHash = getEnsNameHash('blockid.test');
         break;
     }
 
@@ -45,10 +44,34 @@ module.exports = function(deployer, network) {
       Identity.address
     );
 
-    await ens.setOwner(nameHash, registry.address);
-    await registry.addEnsRootNode(nameHash);
+    switch (network) {
+      case 'prod': {
+        await ens.setOwner(nameHash, registry.address);
+        await registry.addEnsRootNode(nameHash);
 
-    // creating admin identity
-    await registry.createSelfIdentity(getEnsLabelHash('admin'), nameHash)
+        // creating admin identity
+        await registry.createSelfIdentity(getEnsLabelHash('admin'), nameHash)
+        break;
+      }
+
+      case 'test': {
+        const nameHashes = [
+          getEnsNameHash('blockid.test'),
+          getEnsNameHash('demo.test'),
+          getEnsNameHash('example.test'),
+        ];
+
+        for (const nameHash of nameHashes) {
+          await ens.setOwner(nameHash, registry.address);
+          await registry.addEnsRootNode(nameHash);
+
+          // creating admin identity
+          await registry.createSelfIdentity(getEnsLabelHash('admin'), nameHash);
+        }
+        break;
+      }
+
+    }
+
   });
 };
