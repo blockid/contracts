@@ -25,8 +25,8 @@ $ direnv allow
 $ echo export PROD_MNEMONIC="<your 12 mnemonic seed phrase>" > .envrc
 $ echo export PROD_ENDPOINT="<rpc node endpoint e.g https://rinkeby.infura.io/>" >> .envrc
 $ echo export PROD_ENS_ADDRESS="<ens address>" >> .envrc
-$ echo export PROD_ENS_TLD="<ens tlt e.g test>" >> .envrc
-$ echo export PROD_ENS_DOMAIN="<ens domain e.g blockid.test>" >> .envrc
+$ echo export PROD_ENS_LABEL="<ens label e.g blockid>" >> .envrc
+$ echo export PROD_ENS_ROOT_NODE="<ens root node e.g test>" >> .envrc
 
 $ direnv allow
 ```
