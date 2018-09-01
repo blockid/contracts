@@ -19,10 +19,10 @@
     "migrate:test": "truffle migrate --reset --network=test",
     "migrate:prod": "truffle migrate --network=prod",
     "test": "truffle test --reset --network=test",
-    "test:node": "ganache-cli -m \"$TEST_MNEMONIC\" -i 1000 -g 100000000000"
+    "test:node": "ganache-cli -h 0.0.0.0 -m \"$TEST_MNEMONIC\" -i 1000 -g 100000000000"
   },
   "dependencies": {
-    "blockid": "^0.1.0-alpha.28",
+    "blockid": "^0.1.0-alpha.29",
     "bignumber.js": "^7.2.1",
     "bip39": "^2.5.0",
     "ethereumjs-wallet": "0.6.0",

@@ -1,5 +1,5 @@
 const { getEnsNameInfo, buildPersonalMessage, anyToHex } = require('blockid');
-const { keyPairs } = require('./fixtures');
+const { devices } = require('./fixtures');
 const { getRandomEnsNameInfo } = require('./utils');
 
 const ENSMock = artifacts.require('ENSMock.sol');
@@ -72,7 +72,7 @@ contract('Registry', (accounts) => {
           rootNode.nameHash,
         );
 
-        const messageSignature = keyPairs[1].signPersonalMessage(message);
+        const messageSignature = await devices[1].signPersonalMessage(message);
 
         const { logs: [log] } = await registry.createIdentity(
           labelHash,

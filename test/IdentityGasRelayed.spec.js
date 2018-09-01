@@ -1,5 +1,5 @@
 const { buildPersonalMessage, anyToHex, convertUnit, Units } = require('blockid');
-const { keyPairs, network } = require('./fixtures');
+const { devices, network } = require('./fixtures');
 const { getRandomEnsNameInfo, getMethodSignature } = require('./utils');
 
 const ENSMock = artifacts.require('ENSMock.sol');
@@ -78,7 +78,7 @@ contract('IdentityGasRelayed', (accounts) => {
           gasPrice,
         );
 
-        const messageSignature = keyPairs[1].signPersonalMessage(message);
+        const messageSignature = await devices[1].signPersonalMessage(message);
 
         const { logs: [log] } = await identity.gasRelayedAddMember(
           nonce++,
@@ -137,7 +137,7 @@ contract('IdentityGasRelayed', (accounts) => {
           gasPrice,
         );
 
-        const messageSignature = keyPairs[1].signPersonalMessage(message);
+        const messageSignature = await devices[1].signPersonalMessage(message);
 
         const { logs: [log] } = await identity.gasRelayedExecuteTransaction(
           nonce++,

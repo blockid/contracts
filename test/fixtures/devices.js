@@ -1,17 +1,16 @@
 const bip39 = require('bip39');
 const hdKey = require('ethereumjs-wallet/hdkey');
-const { KeyPair, anyToBuffer } = require('blockid');
+const { Device, anyToBuffer } = require('blockid');
 
 const HD_PATH = 'm/44\'/60\'/0\'/0/';
 const ACCOUNTS_COUNT = 10;
 
 const hdWallet = hdKey.fromMasterSeed(bip39.mnemonicToSeed(process.env.TEST_MNEMONIC));
-const keyPairs = [];
+const devices = [];
 
 for (let i = 0; i < ACCOUNTS_COUNT; i++) {
   const wallet = hdWallet.derivePath(HD_PATH + i).getWallet();
-  keyPairs.push(
-    new KeyPair({
+  devices.push(Device.create(null, {
       privateKey: anyToBuffer(wallet.getPrivateKey(), {
         autoStringDetect: true,
       }),
@@ -19,4 +18,4 @@ for (let i = 0; i < ACCOUNTS_COUNT; i++) {
   );
 }
 
-module.exports = keyPairs;
+module.exports = devices;

@@ -1,7 +1,7 @@
-const keyPairs = require('./keyPairs');
+const devices = require('./devices');
 const network = require('./network');
 
 module.exports = {
-  keyPairs,
+  devices,
   network,
 };
