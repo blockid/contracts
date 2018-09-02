@@ -10,7 +10,7 @@ const devices = [];
 
 for (let i = 0; i < ACCOUNTS_COUNT; i++) {
   const wallet = hdWallet.derivePath(HD_PATH + i).getWallet();
-  devices.push(Device.create(null, {
+  devices.push(new Device(null, {
       privateKey: anyToBuffer(wallet.getPrivateKey(), {
         autoStringDetect: true,
       }),

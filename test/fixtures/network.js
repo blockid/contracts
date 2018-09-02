@@ -1,5 +1,5 @@
 const { Network } = require('blockid');
 
-module.exports = Network.create({
+module.exports = new Network({
   providerEndpoint: process.env.TEST_ENDPOINT,
 });
