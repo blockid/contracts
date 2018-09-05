@@ -52,9 +52,9 @@ contract('IdentityGasRelayed', (accounts) => {
 
         const member = accounts[2];
         const purpose = identity.address;
-        const limit = 10;
+        const limit = 0;
         const gasPrice = anyToHex(await network.getGasPrice(), { add0x: true });
-        const extraGas = 10;
+        const extraGas = 0x4048;
 
         const message = buildPersonalMessage(
           'address', // identity address
