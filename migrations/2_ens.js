@@ -1,4 +1,5 @@
 const {
+  normalizeEnsName,
   getEnsNameHash,
   getEnsLabelHash,
   getEnsNameInfo,
@@ -18,37 +19,42 @@ module.exports = function(deployer, network, [account]) {
 
     switch (network) {
       case 'prod': {
-        const { nameHash, labelHash, rootNode } = getEnsNameInfo(
-          process.env.PROD_ENS_LABEL,
-          process.env.PROD_ENS_ROOT_NODE,
-        );
+        const labels = (process.env.PROD_ENS_LABELS || '')
+          .split(',')
+          .map(label => label.trim())
+          .filter(label => !!label);
 
-        ens = AbstractENS.at(process.env.PROD_ENS_ADDRESS);
+        for (const label of labels) {
+          const name = normalizeEnsName(label, process.env.PROD_ENS_ROOT_NODE);
 
-        const owner = prepareAddress(await ens.owner(nameHash));
+          const { nameHash, labelHash, rootNode } = getEnsNameInfo(name);
 
-        switch (owner) {
-          case account:
-            break;
+          ens = AbstractENS.at(process.env.PROD_ENS_ADDRESS);
 
-          case null:
-            switch (rootNode.name) {
-              case "test":
-                const registrarAddress = await ens.owner(rootNodeNameHash);
-                const registrar = AbstractENSFIFSRegistrar.at(registrarAddress);
-                await registrar.register(labelHash, account)
-                break;
+          const owner = prepareAddress(await ens.owner(nameHash));
 
-              default:
-                throw new Error('Invalid account');
-            }
-            break;
+          switch (owner) {
+            case account:
+              break;
 
-          default:
-            const registry = AbstractRegistry.at(owner);
-            await registry.removeEnsRootNode(nameHash);
+            case null:
+              switch (rootNode.name) {
+                case "test":
+                  const registrarAddress = await ens.owner(rootNode.nameHash);
+                  const registrar = AbstractENSFIFSRegistrar.at(registrarAddress);
+                  await registrar.register(labelHash, account);
+                  break;
+
+                default:
+                  throw new Error('Invalid account');
+              }
+              break;
+
+            default:
+              const registry = AbstractRegistry.at(owner);
+              await registry.removeEnsRootNode(nameHash);
+          }
         }
-
         break;
       }
       case 'test': {

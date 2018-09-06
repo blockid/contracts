@@ -1,5 +1,5 @@
 const {
-  prepareEnsName,
+  normalizeEnsName,
   getEnsNameHash,
   getEnsLabelHash,
 } = require('blockid');
@@ -22,14 +22,10 @@ module.exports = function(deployer, network) {
     deployer.link(SignatureLib, Registry);
 
     let ens;
-    let nameHash;
 
     switch (network) {
       case 'prod':
         ens = AbstractENS.at(process.env.PROD_ENS_ADDRESS);
-        nameHash = getEnsNameHash(
-          prepareEnsName(process.env.PROD_ENS_LABEL, process.env.PROD_ENS_ROOT_NODE)
-        );
         break;
 
       case 'test':
@@ -46,11 +42,21 @@ module.exports = function(deployer, network) {
 
     switch (network) {
       case 'prod': {
-        await ens.setOwner(nameHash, registry.address);
-        await registry.addEnsRootNode(nameHash);
+        const labels = (process.env.PROD_ENS_LABELS || '')
+          .split(',')
+          .map(label => label.trim())
+          .filter(label => !!label);
 
-        // creating admin identity
-        await registry.createSelfIdentity(getEnsLabelHash('admin'), nameHash)
+        for (const label of labels) {
+          const name = normalizeEnsName(label, process.env.PROD_ENS_ROOT_NODE)
+          const nameHash = getEnsNameHash(name);
+
+          await ens.setOwner(nameHash, registry.address);
+          await registry.addEnsRootNode(nameHash);
+
+          // creating admin identity
+          await registry.createSelfIdentity(getEnsLabelHash('admin'), nameHash)
+        }
         break;
       }
 
@@ -70,8 +76,6 @@ module.exports = function(deployer, network) {
         }
         break;
       }
-
     }
-
   });
 };

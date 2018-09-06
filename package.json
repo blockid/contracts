@@ -22,12 +22,12 @@
     "test:node": "ganache-cli -h 0.0.0.0 -m \"$TEST_MNEMONIC\" -i 1000 -g 100000000000"
   },
   "dependencies": {
-    "blockid": "^0.1.0-alpha.29",
+    "blockid": "^0.1.0-alpha.30",
     "bignumber.js": "^7.2.1",
     "bip39": "^2.5.0",
-    "ethereumjs-wallet": "0.6.0",
-    "ganache-cli": "^6.1.4",
-    "truffle": "^4.1.13",
-    "truffle-hdwallet-provider": "0.0.5"
+    "ethereumjs-wallet": "^0.6.2",
+    "ganache-cli": "^6.1.8",
+    "truffle": "^4.1.14",
+    "truffle-hdwallet-provider": "^0.0.6"
   }
 }
