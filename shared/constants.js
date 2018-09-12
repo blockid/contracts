@@ -1,4 +1,4 @@
-const { publicKeyToAddress, anyToBuffer, normalizeEnsName, getEnsNameInfo, anyToHex } = require('eth-utils');
+const { anyToBuffer, normalizeEnsName, getEnsNameInfo, anyToHex } = require('eth-utils');
 const bip39 = require('bip39');
 const hdKey = require('ethereumjs-wallet/hdkey');
 
