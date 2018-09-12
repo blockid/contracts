@@ -1,5 +1,5 @@
 const { getEnsLabelHash, buildPersonalMessage, anyToHex } = require('eth-utils');
-const { getEnsNamesInfo, getPersonalMessageSignature } = require('../shared/utils');
+const { getEnsNamesInfo, getPersonalMessageSignature } = require('../shared');
 
 const AddressLib = artifacts.require('AddressLib');
 const AddressArrayLib = artifacts.require('AddressArrayLib');

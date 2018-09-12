@@ -1,5 +1,5 @@
 const { getEnsNameHash, getEnsLabelHash, prepareAddress } = require('eth-utils');
-const { getEnsNamesInfo } = require('../shared/utils');
+const { getEnsNamesInfo } = require('../shared');
 
 const AbstractENS = artifacts.require('AbstractENS');
 const AbstractENSFIFSRegistrar = artifacts.require('AbstractENSFIFSRegistrar');
