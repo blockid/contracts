@@ -3,7 +3,7 @@ const AddressArrayLib = artifacts.require('AddressArrayLib');
 const SignatureLib = artifacts.require('SignatureLib');
 const Guardian = artifacts.require('SharedAccount');
 
-module.exports = async function(deployer, network, accounts) {
+module.exports = async (deployer, network, accounts) => {
 
   // linking
   deployer.link(AddressLib, Guardian);

@@ -8,7 +8,7 @@ const ENSMock = artifacts.require('ENSMock');
 const ENSResolver = artifacts.require('ENSResolver');
 const ENSRegistrarMock = artifacts.require('ENSRegistrarMock');
 
-module.exports = async function(deployer, network, [account]) {
+module.exports = async (deployer, network, [account]) => {
   let ens;
 
   const ensNamesInfo = getEnsNamesInfo(network);

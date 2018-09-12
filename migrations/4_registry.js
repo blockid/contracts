@@ -10,7 +10,7 @@ const ENSResolver = artifacts.require('ENSResolver');
 const Registry = artifacts.require('Registry');
 const Guardian = artifacts.require('SharedAccount');
 
-module.exports = async function(deployer, network, [account, guardianMember]) {
+module.exports = async (deployer, network, [account, guardianMember]) => {
 
   // linking
   deployer.link(AddressLib, Registry);
