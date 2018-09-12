@@ -5,14 +5,10 @@ pragma solidity ^0.4.24;
  */
 contract AbstractENS {
 
-  // events
-
   event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);
   event Transfer(bytes32 indexed node, address owner);
   event NewResolver(bytes32 indexed node, address resolver);
   event NewTTL(bytes32 indexed node, uint64 ttl);
-
-  // methods
 
   function owner(bytes32 _node) public constant returns (address);
 

@@ -1,11 +1,12 @@
 pragma solidity ^0.4.24;
 
-import "./RegistryENSRootNodeHolder.sol";
-import "./RegistryIdentityHolder.sol";
+import "./RegistryENS.sol";
+import "./RegistryGuardian.sol";
+import "./RegistrySharedAccount.sol";
 
 /**
  * Abstract Registry
  */
-contract AbstractRegistry is AbstractRegistryENSRootNodeHolder, AbstractRegistryIdentityHolder {
+contract AbstractRegistry is AbstractRegistryENS, AbstractRegistryGuardian, AbstractRegistrySharedAccount {
 
 }

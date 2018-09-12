@@ -2,12 +2,12 @@ pragma solidity ^0.4.24;
 
 import "../ens/abstract/ENS.sol";
 import "../ens/ENSResolver.sol";
-import "./abstract/RegistryENSRootNodeHolder.sol";
+import "./abstract/RegistryENS.sol";
 
 /**
- * Registry ENS Root Node Holder
+ * Registry ENS
  */
-contract RegistryENSRootNodeHolder is AbstractRegistryENSRootNodeHolder {
+contract RegistryENS is AbstractRegistryENS {
 
   bytes32 constant ENS_REGISTRY_LABEL = keccak256("registry");
 
@@ -20,24 +20,10 @@ contract RegistryENSRootNodeHolder is AbstractRegistryENSRootNodeHolder {
     //
   }
 
-  // public view
-
-  /**
-   * checks if ens root node exists
-   *
-   * @param _ensRootNode ENS root node
-   */
   function ensRootNodeExists(bytes32 _ensRootNode) public view returns (bool) {
     return ensRootNodesOwners[_ensRootNode] != address(0);
   }
 
-  // public methods
-
-  /**
-   * adds ENS root node
-   *
-   * @param _ensRootNode ENS root node
-   */
   function addEnsRootNode(bytes32 _ensRootNode) public {
     require(
       ens.owner(_ensRootNode) == address(this),
@@ -61,11 +47,6 @@ contract RegistryENSRootNodeHolder is AbstractRegistryENSRootNodeHolder {
     emit EnsRootNodeAdded(_ensRootNode);
   }
 
-  /**
-   * removes ENS root node
-   *
-   * @param _ensRootNode ENS root node
-   */
   function removeEnsRootNode(bytes32 _ensRootNode) public {
     require(
       ensRootNodeExists(_ensRootNode),

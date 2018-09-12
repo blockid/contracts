@@ -1,17 +1,18 @@
 pragma solidity ^0.4.24;
 
+import "../sharedAccount/abstract/SharedAccount.sol";
 import "../ens/abstract/ENS.sol";
 import "../ens/ENSResolver.sol";
-import "./RegistryIdentityHolder.sol";
+import "./RegistrySharedAccount.sol";
 
 /**
  * Registry
  */
-contract Registry is RegistryIdentityHolder {
+contract Registry is RegistrySharedAccount {
 
-  constructor(AbstractENS _ens, ENSResolver _ensResolver, address _identityBase) public {
+  constructor(AbstractSharedAccount _guardian, AbstractENS _ens, ENSResolver _ensResolver) public {
+    guardian = _guardian;
     ens = _ens;
     ensResolver = _ensResolver;
-    identityBase = _identityBase;
   }
 }

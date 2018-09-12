@@ -1,13 +1,13 @@
 pragma solidity ^0.4.24;
 
 import "../libs/AddressArrayLib.sol";
-import "./abstract/IdentityMemberHolder.sol";
-import "./IdentityNonceHolder.sol";
+import "./abstract/SharedAccountMember.sol";
+import "./SharedAccountNonce.sol";
 
 /**
- * Identity Member Holder
+ * Shared Account Member
  */
-contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceHolder {
+contract SharedAccountMember is AbstractSharedAccountMember, SharedAccountNonce {
 
   using AddressArrayLib for address[];
 
@@ -44,13 +44,6 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceHold
     //
   }
 
-  // public view
-
-  /**
-   * gets member by member address
-   *
-   * @param _member member address
-   */
   function getMember(address _member) public view returns (address purpose, uint256 limit, bool unlimited, address manager) {
     purpose = members[_member].purpose;
     limit = members[_member].limit;
@@ -59,81 +52,21 @@ contract IdentityMemberHolder is AbstractIdentityMemberHolder, IdentityNonceHold
     return;
   }
 
-  /**
-   * gets member addresses by purpose contract address
-   *
-   * @param _purpose purpose contract address
-   */
   function getPurposeMembers(address _purpose) public view returns (address[]) {
     return membersByPurpose[_purpose];
   }
 
-  /**
-   * checks if member exists
-   *
-   * @param _member member address
-   */
   function memberExists(address _member) public view returns (bool) {
     return members[_member].purpose != address(0);
   }
 
-  /**
-   * checks if member has contract purpose
-   *
-   * @param _member member address
-   * @param _purpose purpose contract address
-   */
   function memberHasPurpose(address _member, address _purpose) public view returns (bool) {
     return members[_member].purpose == _purpose;
   }
 
-  /**
-   * verifies member limit
-   *
-   * @param _member member address
-   * @param _limit limit
-   */
   function verifyMemberLimit(address _member, uint256 _limit) public view returns (bool) {
     return memberExists(_member) && (members[_member].unlimited || members[_member].limit >= _limit);
   }
-
-  // public methods
-
-  /**
-   * adds member
-   *
-   * @param _nonce current nonce
-   * @param _member member address
-   * @param _purpose purpose contract address
-   * @param _limit member limit
-   * @param _unlimited member is unlimited
-   */
-  function addMember(uint256 _nonce, address _member, address _purpose, uint256 _limit, bool _unlimited) public {
-    _addMember(msg.sender, _nonce, _member, _purpose, _limit, _unlimited);
-  }
-
-  /**
-   * updates member limit
-   *
-   * @param _nonce current nonce
-   * @param _member member address
-   * @param _limit member limit
-   */
-  function updateMemberLimit(uint256 _nonce, address _member, uint256 _limit) public {
-    _updateMemberLimit(msg.sender, _nonce, _member, _limit);
-  }
-
-  /**
-   * removes member
-   *
-   * @param _nonce current nonce
-   * @param _member member address
-   */
-  function removeMember(uint256 _nonce, address _member) public {
-    _removeMember(msg.sender, _nonce, _member);
-  }
-
-  // internal methods
 
   function _addMember(address _sender, uint256 _nonce, address _member, address _purpose, uint256 _limit, bool _unlimited) internal onlySelfPurposeWithLimit(_sender) verifyNonce(_nonce) {
     require(

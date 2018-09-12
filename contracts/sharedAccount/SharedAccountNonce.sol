@@ -1,11 +1,11 @@
 pragma solidity ^0.4.24;
 
-import "./abstract/IdentityNonceHolder.sol";
+import "./abstract/SharedAccountNonce.sol";
 
 /**
- * Identity Nonce Holder
+ * Shared Account Nonce
  */
-contract IdentityNonceHolder is AbstractIdentityNonceHolder {
+contract SharedAccountNonce is AbstractSharedAccountNonce {
 
   modifier verifyNonce(uint256 _nonce) {
     require(
@@ -15,7 +15,7 @@ contract IdentityNonceHolder is AbstractIdentityNonceHolder {
 
     _;
 
-    ++nonce;
+    emit NonceUpdated(++nonce);
   }
 
   constructor() internal {

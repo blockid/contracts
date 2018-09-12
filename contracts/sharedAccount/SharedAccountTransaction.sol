@@ -1,36 +1,20 @@
 pragma solidity ^0.4.24;
 
-import "./abstract/IdentityTransaction.sol";
-import "./IdentityMemberHolder.sol";
+import "./abstract/SharedAccountTransaction.sol";
+import "./SharedAccountMember.sol";
 
 /**
- * Identity Transaction
+ * Shared Account Transaction
  */
-contract IdentityTransaction is AbstractIdentityTransaction, IdentityMemberHolder {
+contract SharedAccountTransaction is AbstractSharedAccountTransaction, SharedAccountMember {
 
   constructor() internal {
     //
   }
 
-  // public methods
-
   function() public payable {
     //
   }
-
-  /**
-   * executes transaction
-   *
-   * @param _nonce current nonce
-   * @param _to recipient address
-   * @param _value transaction value
-   * @param _data transaction data
-   */
-  function executeTransaction(uint256 _nonce, address _to, uint256 _value, bytes _data) public {
-    _executeTransaction(msg.sender, _nonce, _to, _value, _data);
-  }
-
-  // internal methods
 
   function _executeTransaction(address _sender, uint256 _nonce, address _to, uint256 _value, bytes _data) internal verifyNonce(_nonce) {
     require(

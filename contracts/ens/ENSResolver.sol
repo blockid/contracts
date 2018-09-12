@@ -7,8 +7,6 @@ import "./abstract/ENS.sol";
  */
 contract ENSResolver {
 
-  // events
-
   event AddrChanged(bytes32 indexed node, address a);
   event ABIChanged(bytes32 indexed node, uint256 indexed contentType);
 
