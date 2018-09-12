@@ -14,7 +14,6 @@ $ npm i
 
 ```bash 
 $ echo export TEST_MNEMONIC="<your 12 mnemonic seed phrase>" > .envrc
-$ echo export TEST_ENDPOINT="<rpc node endpoint e.g http://localhost:8545/>" >> .envrc
 
 $ direnv allow
 ```
@@ -67,24 +66,11 @@ $ npm test
 
 **Rinkeby:**
 
-| Contract Name 	| Address 	|
-|--------------------	|----------------------------------------------	|
-| `ENS` 	| `0xe7410170f87102df0055eb195163a03b7f2bff4a` 	|
-| `ENSResolver` 	| `0x3b279b419cfd6f95080ce50a24d460f24739296d` 	|
-| `Registry` 	| `0x9648d6ec437de6c19374d565d631359c30f4ef8d` 	|
+(not deployed yet)
 
 **Kovan:**
 
 (not deployed yet)
-
-**Local test node:**
-
-| Contract Name 	| Address 	|
-|--------------------	|----------------------------------------------	|
-| `ENSMock` 	| `0xd373171f3f9b3da8552287174583dd57843c7002` 	|
-| `ENSRegistrarMock` 	| `0x29c7ab991d282fc7ebab881443c4ddb9e78c3f53` 	|
-| `ENSResolver` 	| `0xf8eb936a7f20dd4d6ecfaeb6aa68218e17cf316c` 	|
-| `Registry` 	| `0x8c806655cc7a816e01a7c0719c0057f7d96f28cd` 	|
 
 ## License
 
