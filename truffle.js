@@ -1,14 +1,11 @@
-const { NetworkProvider } = require("blockid");
 const HDWalletProvider = require("truffle-hdwallet-provider");
 
 module.exports = {
   networks: {
     test: {
-      provider: function() {
-        return new NetworkProvider(process.env.TEST_ENDPOINT);
-      },
+      host: "localhost",
+      port: 8545,
       network_id: "1000",
-      gas: 6200000,
     },
     prod: {
       provider: function() {
@@ -20,11 +17,15 @@ module.exports = {
       network_id: 4,
       gas: 6200000,
     },
+  },
+  compilers: {
     solc: {
-      optimizer: {
-        enabled: true,
-        runs: 200
-      }
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 200
+        },
+      },
     },
   },
 };
