@@ -1,11 +1,9 @@
-const AddressLib = artifacts.require('AddressLib.sol');
-const AddressArrayLib = artifacts.require('AddressArrayLib.sol');
-const SignatureLib = artifacts.require('SignatureLib.sol');
+const AddressLib = artifacts.require('AddressLib');
+const AddressArrayLib = artifacts.require('AddressArrayLib');
+const SignatureLib = artifacts.require('SignatureLib');
 
-module.exports = function(deployer) {
-  deployer.then(async () => {
-    await deployer.deploy(AddressLib);
-    await deployer.deploy(AddressArrayLib);
-    await deployer.deploy(SignatureLib);
-  });
+module.exports = async function(deployer) {
+  await deployer.deploy(AddressLib);
+  await deployer.deploy(AddressArrayLib);
+  await deployer.deploy(SignatureLib);
 };

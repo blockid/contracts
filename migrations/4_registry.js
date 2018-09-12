@@ -1,81 +1,68 @@
-const {
-  normalizeEnsName,
-  getEnsNameHash,
-  getEnsLabelHash,
-} = require('blockid');
+const { getEnsLabelHash, buildPersonalMessage, anyToHex } = require('eth-utils');
+const { getEnsNamesInfo, getPersonalMessageSignature } = require('../shared/utils');
 
-const AddressLib = artifacts.require('AddressLib.sol');
-const AddressArrayLib = artifacts.require('AddressArrayLib.sol');
-const SignatureLib = artifacts.require('SignatureLib.sol');
-const AbstractENS = artifacts.require('AbstractENS.sol');
-const ENSMock = artifacts.require('ENSMock.sol');
-const ENSResolver = artifacts.require('ENSResolver.sol');
-const Identity = artifacts.require('Identity.sol');
-const Registry = artifacts.require('Registry.sol');
+const AddressLib = artifacts.require('AddressLib');
+const AddressArrayLib = artifacts.require('AddressArrayLib');
+const SignatureLib = artifacts.require('SignatureLib');
+const AbstractENS = artifacts.require('AbstractENS');
+const ENSMock = artifacts.require('ENSMock');
+const ENSResolver = artifacts.require('ENSResolver');
+const Registry = artifacts.require('Registry');
+const Guardian = artifacts.require('SharedAccount');
 
-module.exports = function(deployer, network) {
-  deployer.then(async () => {
+module.exports = async function(deployer, network, [account, guardianMember]) {
 
-    // linking
-    deployer.link(AddressLib, Registry);
-    deployer.link(AddressArrayLib, Registry);
-    deployer.link(SignatureLib, Registry);
+  // linking
+  deployer.link(AddressLib, Registry);
+  deployer.link(AddressArrayLib, Registry);
+  deployer.link(SignatureLib, Registry);
 
-    let ens;
+  const ensNamesInfo = getEnsNamesInfo(network);
 
-    switch (network) {
-      case 'prod':
-        ens = AbstractENS.at(process.env.PROD_ENS_ADDRESS);
-        break;
+  const ens = await AbstractENS.at(
+    network === 'prod'
+      ? process.env.PROD_ENS_ADDRESS
+      : ENSMock.address
+  );
 
-      case 'test':
-        ens = AbstractENS.at(ENSMock.address);
-        break;
-    }
+  await deployer.deploy(
+    Registry,
+    Guardian.address,
+    ens.address,
+    ENSResolver.address,
+  );
 
-    const registry = await deployer.deploy(
-      Registry,
-      ens.address,
-      ENSResolver.address,
-      Identity.address
+  const registry = await Registry.deployed();
+  const guardian = await Guardian.deployed();
+  await guardian.addMember(0, guardianMember, registry.address, 0, false, 0, '0x');
+
+  const adminLabelHash = getEnsLabelHash('admin');
+
+  for (const { nameHash } of ensNamesInfo) {
+    await ens.setOwner(nameHash, registry.address);
+    await registry.addEnsRootNode(nameHash);
+
+    const message = buildPersonalMessage(
+      'address',
+      'uint256',
+      'bytes32',
+      'bytes32'
+    )(
+      registry.address,
+      0,
+      adminLabelHash,
+      nameHash,
     );
 
-    switch (network) {
-      case 'prod': {
-        const labels = (process.env.PROD_ENS_LABELS || '')
-          .split(',')
-          .map(label => label.trim())
-          .filter(label => !!label);
+    const memberMessageSignature = getPersonalMessageSignature(message, account, network);
+    const guardianMessageSignature = getPersonalMessageSignature(memberMessageSignature, guardianMember, network);
 
-        for (const label of labels) {
-          const name = normalizeEnsName(label, process.env.PROD_ENS_ROOT_NODE)
-          const nameHash = getEnsNameHash(name);
-
-          await ens.setOwner(nameHash, registry.address);
-          await registry.addEnsRootNode(nameHash);
-
-          // creating admin identity
-          await registry.createSelfIdentity(getEnsLabelHash('admin'), nameHash)
-        }
-        break;
-      }
-
-      case 'test': {
-        const nameHashes = [
-          getEnsNameHash('blockid.test'),
-          getEnsNameHash('demo.test'),
-          getEnsNameHash('example.test'),
-        ];
-
-        for (const nameHash of nameHashes) {
-          await ens.setOwner(nameHash, registry.address);
-          await registry.addEnsRootNode(nameHash);
-
-          // creating admin identity
-          await registry.createSelfIdentity(getEnsLabelHash('admin'), nameHash);
-        }
-        break;
-      }
-    }
-  });
+    await registry.createSharedAccount(
+      0,
+      adminLabelHash,
+      nameHash,
+      anyToHex(memberMessageSignature, { add0x: true }),
+      anyToHex(guardianMessageSignature, { add0x: true }),
+    );
+  }
 };
