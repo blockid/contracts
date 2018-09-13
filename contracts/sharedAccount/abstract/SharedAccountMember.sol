@@ -5,10 +5,10 @@ pragma solidity ^0.4.24;
  */
 contract AbstractSharedAccountMember {
 
-  event MemberAdded(address sender, uint256 nonce, address member, address purpose, uint256 limit, bool unlimited, address manager);
-  event MemberLimitUpdated(address sender, uint256 nonce, address member, uint256 limit);
-  event MemberManagerUpdated(address sender, uint256 nonce, address member, address manager);
-  event MemberRemoved(address sender, uint256 nonce, address member);
+  event MemberAdded(address sender, uint256 nonce, address indexed member, address purpose, uint256 limit, bool unlimited, address manager);
+  event MemberLimitUpdated(address sender, uint256 nonce, address indexed member, uint256 limit);
+  event MemberManagerUpdated(address sender, uint256 nonce, address indexed member, address manager);
+  event MemberRemoved(address sender, uint256 nonce, address indexed member);
 
   function getMember(address _member) public view returns (address purpose, uint256 limit, bool unlimited, address manager);
 
