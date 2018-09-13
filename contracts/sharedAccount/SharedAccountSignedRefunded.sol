@@ -87,7 +87,6 @@ contract SharedAccountSignedRefunded is AbstractSharedAccountSignedRefunded, Sha
     _updateMemberLimit(signer, _nonce, _member, _limit);
   }
 
-
   function removeMember(
     uint256 _nonce,
     address _member,

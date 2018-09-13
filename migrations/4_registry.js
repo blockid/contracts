@@ -10,7 +10,7 @@ const ENSResolver = artifacts.require('ENSResolver');
 const Registry = artifacts.require('Registry');
 const Guardian = artifacts.require('SharedAccount');
 
-module.exports = async (deployer, network, [account, guardianMember]) => {
+module.exports = async (deployer, network, [mainAccount, guardianMember]) => {
 
   // linking
   deployer.link(AddressLib, Registry);
@@ -36,7 +36,7 @@ module.exports = async (deployer, network, [account, guardianMember]) => {
   const guardian = await Guardian.deployed();
   await guardian.addMember(0, guardianMember, registry.address, 0, false, 0, '0x');
 
-  const adminLabelHash = getEnsLabelHash('admin');
+  const labelHash = getEnsLabelHash('admin');
 
   for (const { nameHash } of ensNamesInfo) {
     await ens.setOwner(nameHash, registry.address);
@@ -50,16 +50,16 @@ module.exports = async (deployer, network, [account, guardianMember]) => {
     )(
       registry.address,
       0,
-      adminLabelHash,
+      labelHash,
       nameHash,
     );
 
-    const memberMessageSignature = getPersonalMessageSignature(message, account, network);
+    const memberMessageSignature = getPersonalMessageSignature(message, mainAccount, network);
     const guardianMessageSignature = getPersonalMessageSignature(memberMessageSignature, guardianMember, network);
 
     await registry.createSharedAccount(
       0,
-      adminLabelHash,
+      labelHash,
       nameHash,
       anyToHex(memberMessageSignature, { add0x: true }),
       anyToHex(guardianMessageSignature, { add0x: true }),

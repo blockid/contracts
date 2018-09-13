@@ -1,4 +1,4 @@
-const { getEnsNameInfo, sha3 } = require('blockid');
+const { getEnsNameInfo, sha3 } = require('eth-utils');
 
 let counter = Date.now();
 

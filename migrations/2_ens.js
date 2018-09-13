@@ -8,7 +8,7 @@ const ENSMock = artifacts.require('ENSMock');
 const ENSResolver = artifacts.require('ENSResolver');
 const ENSRegistrarMock = artifacts.require('ENSRegistrarMock');
 
-module.exports = async (deployer, network, [account]) => {
+module.exports = async (deployer, network, [mainAccount]) => {
   let ens;
 
   const ensNamesInfo = getEnsNamesInfo(network);
@@ -22,7 +22,7 @@ module.exports = async (deployer, network, [account]) => {
         const owner = prepareAddress(await ens.owner(nameHash));
 
         switch (owner) {
-          case account:
+          case mainAccount:
             break;
 
           case null:
@@ -30,7 +30,7 @@ module.exports = async (deployer, network, [account]) => {
               case "test":
                 const registrarAddress = await ens.owner(rootNode.nameHash);
                 const registrar = AbstractENSFIFSRegistrar.at(registrarAddress);
-                await registrar.register(labelHash, account);
+                await registrar.register(labelHash, mainAccount);
                 break;
 
               default:
@@ -54,7 +54,7 @@ module.exports = async (deployer, network, [account]) => {
       await ens.setSubnodeOwner("0x00", getEnsLabelHash('test'), registrar.address);
 
       for (const { labelHash } of ensNamesInfo) {
-        await registrar.register(labelHash, account);
+        await registrar.register(labelHash, mainAccount);
       }
       break;
     }
