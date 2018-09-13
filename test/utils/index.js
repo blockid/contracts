@@ -1,4 +1,4 @@
-const { getEnsNameInfo, sha3 } = require('eth-utils');
+const { getEnsNameInfo } = require('eth-utils');
 
 let counter = Date.now();
 
@@ -7,11 +7,6 @@ function getRandomEnsNameInfo() {
   return getEnsNameInfo(name);
 }
 
-function getMethodSignature(name, ...args) {
-  return sha3(`${name}(${args.join(",")})`).slice(0, 4);
-}
-
 module.exports = {
   getRandomEnsNameInfo,
-  getMethodSignature,
 };

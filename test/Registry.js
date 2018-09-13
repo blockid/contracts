@@ -1,5 +1,5 @@
 const expect = require('expect');
-const { getEnsNameInfo, buildPersonalMessage, anyToHex } = require('eth-utils');
+const { getEnsNameInfo, abiEncodePacked, anyToHex } = require('eth-utils');
 const { getPersonalMessageSignature } = require('../shared');
 const { createRandomSharedAccount } = require('./helpers');
 const { getRandomEnsNameInfo } = require('./utils');
@@ -8,7 +8,7 @@ const ENSMock = artifacts.require('ENSMock');
 const ENSResolver = artifacts.require('ENSResolver');
 const Registry = artifacts.require('Registry');
 
-contract.skip('Registry', ([mainAccount, guardianMember, member]) => {
+contract('Registry', ([mainAccount, guardianMember, member]) => {
   let ens;
   let ensResolver;
   let registry;
@@ -61,7 +61,7 @@ contract.skip('Registry', ([mainAccount, guardianMember, member]) => {
       it('should create shared account with ens name and accounts[1] member', async () => {
         const { nameHash, labelHash, rootNode } = getRandomEnsNameInfo();
 
-        const message = buildPersonalMessage(
+        const message = abiEncodePacked(
           'address',
           'uint256',
           'bytes32',

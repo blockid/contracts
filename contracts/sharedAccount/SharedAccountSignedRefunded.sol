@@ -18,10 +18,12 @@ contract SharedAccountSignedRefunded is AbstractSharedAccountSignedRefunded, Sha
 
       _;
 
-      uint256 amount = (startGas - gasleft() + _refundGasBase) * tx.gasprice;
+      uint256 gasAmount = startGas - gasleft() + _refundGasBase;
+
+      emit GasRefunded(msg.sender, gasAmount, tx.gasprice);
 
       require(
-        msg.sender.call.gas(0).value(amount)(),
+        msg.sender.call.gas(0).value(gasAmount * tx.gasprice)(),
         "Can't refund used gas"
       );
     } else {

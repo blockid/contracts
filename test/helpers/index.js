@@ -1,4 +1,4 @@
-const { buildPersonalMessage, anyToHex } = require('eth-utils');
+const { abiEncodePacked, anyToHex } = require('eth-utils');
 const { getPersonalMessageSignature } = require('../../shared');
 const { getRandomEnsNameInfo } = require('../utils');
 
@@ -10,7 +10,7 @@ async function createRandomSharedAccount(member, guardianMember) {
 
   const { labelHash, rootNode } = getRandomEnsNameInfo();
 
-  const message = buildPersonalMessage(
+  const message = abiEncodePacked(
     'address',
     'uint256',
     'bytes32',

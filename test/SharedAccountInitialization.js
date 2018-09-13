@@ -1,7 +1,7 @@
 const expect = require('expect');
 const { createRandomSharedAccount } = require('./helpers');
 
-contract.skip('SharedAccountInitialization', ([mainAccount, guardianMember, member2]) => {
+contract('SharedAccountInitialization', ([mainAccount, guardianMember, member2]) => {
 
   let sharedAccount;
 

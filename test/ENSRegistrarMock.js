@@ -5,7 +5,7 @@ const ENSMock = artifacts.require('ENSMock');
 const ENSRegistrarMock = artifacts.require('ENSRegistrarMock');
 const ENSResolver = artifacts.require('ENSResolver');
 
-contract.skip('ENSRegistrarMock', (accounts) => {
+contract('ENSRegistrarMock', (accounts) => {
   let ens;
   let ensRegistrar;
   let ensResolver;

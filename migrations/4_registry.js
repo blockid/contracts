@@ -1,4 +1,4 @@
-const { getEnsLabelHash, buildPersonalMessage, anyToHex } = require('eth-utils');
+const { getEnsLabelHash, abiEncodePacked, anyToHex } = require('eth-utils');
 const { getEnsNamesInfo, getPersonalMessageSignature } = require('../shared');
 
 const AddressLib = artifacts.require('AddressLib');
@@ -42,7 +42,7 @@ module.exports = async (deployer, network, [mainAccount, guardianMember]) => {
     await ens.setOwner(nameHash, registry.address);
     await registry.addEnsRootNode(nameHash);
 
-    const message = buildPersonalMessage(
+    const message = abiEncodePacked(
       'address',
       'uint256',
       'bytes32',

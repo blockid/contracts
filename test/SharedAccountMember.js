@@ -2,19 +2,18 @@ const expect = require('expect');
 const { ZERO_ADDRESS } = require('eth-utils');
 const { createRandomSharedAccount } = require('./helpers');
 
-contract.skip('SharedAccountMember', ([mainAccount, guardianMember, member1, member2]) => {
+contract('SharedAccountMember', ([mainAccount, guardianMember, member1, member2]) => {
 
   let sharedAccount;
-  let nonce = 0;
 
   before(async () => {
     sharedAccount = await createRandomSharedAccount(mainAccount, guardianMember);
 
-    await sharedAccount.addMember(nonce++, member1, sharedAccount.address, 100, false, 0, '0x', {
+    await sharedAccount.addMember(0, member1, sharedAccount.address, 100, false, 0, '0x', {
       from: mainAccount,
     });
 
-    await sharedAccount.addMember(nonce++, member2, guardianMember, 30, false, 0, '0x', {
+    await sharedAccount.addMember(1, member2, guardianMember, 30, false, 0, '0x', {
       from: member1,
     });
   });
@@ -26,7 +25,7 @@ contract.skip('SharedAccountMember', ([mainAccount, guardianMember, member1, mem
         const result = await sharedAccount.getMember(member1);
 
         expect(result.purpose).toBe(sharedAccount.address);
-        expect(result.limit.toNumber()).toBe(70);
+        expect(result.limit.toNumber()).toBe(100 - 30);
         expect(result.unlimited).toBeFalsy()
         expect(result.manager).toBe(ZERO_ADDRESS);
       }

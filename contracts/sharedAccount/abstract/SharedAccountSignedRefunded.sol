@@ -5,6 +5,8 @@ pragma solidity ^0.4.24;
  */
 contract AbstractSharedAccountSignedRefunded {
 
+  event GasRefunded(address recipient, uint256 gasAmount, uint256 gasPrice);
+
   function addMember(
     uint256 _nonce,
     address _member,
