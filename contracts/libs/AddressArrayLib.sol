@@ -4,6 +4,7 @@ pragma solidity ^0.4.24;
  * Address Array Lib
  */
 library AddressArrayLib {
+
   function isEmpty(address[] storage _self) public view returns (bool) {
     return _self.length == uint(0);
   }

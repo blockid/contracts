@@ -5,7 +5,7 @@ module.exports = {
     test: {
       host: "localhost",
       port: 8545,
-      network_id: "1000",
+      network_id: "*",
     },
     prod: {
       provider: function() {

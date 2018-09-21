@@ -19,7 +19,7 @@
     "migrate:test": "truffle migrate --reset --network=test",
     "migrate:prod": "truffle migrate --network=prod",
     "test": "truffle test --reset --network=test",
-    "test:node": "ganache-cli -h 0.0.0.0 -m \"$TEST_MNEMONIC\" -i 1000 -g 100000000000"
+    "test:node": "ganache-cli -h 0.0.0.0 -m \"$TEST_MNEMONIC\" -g 100000000000"
   },
   "dependencies": {
     "bip39": "^2.5.0",
