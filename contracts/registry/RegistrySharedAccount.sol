@@ -34,11 +34,6 @@ contract RegistrySharedAccount is AbstractRegistrySharedAccount, RegistryENS, Re
   ) public verifyGuardianSignature(_memberMessageSignature, _guardianMessageSignature) {
 
     require(
-      _salt == 0,
-      "Non zero salt is currently unsupported"
-    );
-
-    require(
       ensRootNodeExists(_ensRootNode),
       "ENS root node doesn't exists"
     );
